@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
+import 'package:smart_chair_frontend/screens/createAccountPage/create_account_page.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 class LoginPage extends StatefulWidget {
@@ -86,12 +87,12 @@ class _LoginPageState extends State<LoginPage> {
                   children: <Widget>[
                     Text("Não tem conta? "),
                     GestureDetector(
-                        /*onTap: () {
+                        onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => CreateAccountPage()));
-                        },*/
+                        },
                         child: Text(
                       "Cadastre-se",
                       style: TextStyle(
