@@ -28,11 +28,21 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  flutter_barcode_scanner: ^2.0.0
+  permission_handler: ^7.1.0
   rive: ^0.7.10
+  settings_ui: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_native_splash: ^1.1.8+4
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/logo_tcc.png
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -48,6 +58,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/loading_tcc.riv
+    - assets/happiness.png
+    - assets/bored.png
+    - assets/sad.png
+    - assets/logo_tcc.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

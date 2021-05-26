@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
+import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
 import 'package:smart_chair_frontend/screens/createAccountPage/create_account_page.dart';
+import 'package:smart_chair_frontend/screens/introPage/intro_page.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 class LoginPage extends StatefulWidget {
@@ -74,10 +76,8 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50,
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: BottomButton(primaryColor, customColor, "Login", () {
-                  /*Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => BottomNavigationBarMenu()));*/
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => IntroPage()));
                 }),
               ),
               Container(
@@ -94,13 +94,13 @@ class _LoginPageState extends State<LoginPage> {
                                   builder: (context) => CreateAccountPage()));
                         },
                         child: Text(
-                      "Cadastre-se",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ))
+                          "Cadastre-se",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ))
                   ],
                 ),
               )
