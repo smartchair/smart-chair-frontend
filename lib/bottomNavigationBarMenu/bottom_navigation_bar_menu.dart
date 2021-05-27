@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:smart_chair_frontend/screens/homePage/home_page.dart';
-import 'package:smart_chair_frontend/screens/introPage/intro_page.dart';
+import 'package:smart_chair_frontend/screens/metricsPage/metrics_page.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class BottomNavigationBarMenu extends StatefulWidget {
   @override
@@ -12,18 +13,14 @@ class BottomNavigationBarMenu extends StatefulWidget {
 
 class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
   int _selectedIndex = 0;
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
   List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    Text(
-      'Index 2: Mood',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 3: Settings',
-      style: optionStyle,
-    ),
+    Container(height: 300, width: 300, child: LineChartSample1()),
+    //MetricsPage(_createSampleData()),
     SettingsList(
       sections: [
         SettingsSection(
@@ -66,8 +63,6 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
           BottomNavigationBarItem(
               icon: Icon(Icons.graphic_eq), label: 'Gráficos'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.tag_faces_rounded), label: 'Mood'),
-          BottomNavigationBarItem(
               icon: Icon(Icons.settings), label: 'Settings'),
         ],
         currentIndex: _selectedIndex,
@@ -76,4 +71,31 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
       ),
     );
   }
+
+  static List<charts.Series<TimeSeriesSales, DateTime>> _createSampleData() {
+    final data = [
+      new TimeSeriesSales(new DateTime(2017, 9, 19), 5),
+      new TimeSeriesSales(new DateTime(2017, 9, 26), 25),
+      new TimeSeriesSales(new DateTime(2017, 10, 3), 100),
+      new TimeSeriesSales(new DateTime(2017, 10, 10), 75),
+    ];
+
+    return [
+      new charts.Series<TimeSeriesSales, DateTime>(
+        id: 'Sales',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (TimeSeriesSales sales, _) => sales.time,
+        measureFn: (TimeSeriesSales sales, _) => sales.sales,
+        data: data,
+      )
+    ];
+  }
+}
+
+/// Sample time series data type.
+class TimeSeriesSales {
+  final DateTime time;
+  final int sales;
+
+  TimeSeriesSales(this.time, this.sales);
 }
