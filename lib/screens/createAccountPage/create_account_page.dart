@@ -21,8 +21,8 @@ class CreateAccountPageState extends State<CreateAccountPage>
   final TextEditingController _email = TextEditingController();
   final TextEditingController _name = TextEditingController();
 
-  Artboard? _riveArtboard;
-  RiveAnimationController? _controller;
+  Artboard _riveArtboard;
+  RiveAnimationController _controller;
 
   @override
   void initState() {
@@ -65,7 +65,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                 child: _riveArtboard == null
                     ? const SizedBox()
                     : Rive(
-                        artboard: _riveArtboard!,
+                        artboard: _riveArtboard,
                       ),
               ),
             ]),
@@ -92,7 +92,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                               decoration: InputDecoration(labelText: 'Nome'),
                               controller: _name,
                               validator: (val) {
-                                if (val!.isEmpty)
+                                if (val.isEmpty)
                                   return "O nome não pode ser vazio";
                                 return null;
                               },
@@ -104,7 +104,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                               keyboardType: TextInputType.emailAddress,
                               controller: _email,
                               validator: (val) {
-                                if (val!.isEmpty || !val.contains("@"))
+                                if (val.isEmpty || !val.contains("@"))
                                   return "O Email não é valido";
                                 return null;
                               },
@@ -116,7 +116,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                               obscureText: true,
                               controller: _pass,
                               validator: (val) {
-                                if (val!.isEmpty)
+                                if (val.isEmpty)
                                   return "A senha não pode ser vazia";
                                 return null;
                               },
@@ -129,7 +129,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                               obscureText: true,
                               controller: _confirmPass,
                               validator: (val) {
-                                if (val!.isEmpty)
+                                if (val.isEmpty)
                                   return 'A senha não pode ser vazia';
                                 if (val != _pass.text)
                                   return 'As senhas não coincidem';

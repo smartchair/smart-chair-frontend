@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(labelText: 'Nome'),
                     controller: nameController,
                     validator: (val) {
-                      if (val!.isEmpty) return "O nome não pode ser vazio";
+                      if (val.isEmpty) return "O nome não pode ser vazio";
                       return null;
                     },
                   ),
@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(labelText: 'Senha'),
                     controller: passwordController,
                     validator: (val) {
-                      if (val!.isEmpty) return "A senha não pode ser vazia";
+                      if (val.isEmpty) return "A senha não pode ser vazia";
                       return null;
                     },
                   ),
