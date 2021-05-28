@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
+import 'package:smart_chair_frontend/http/user_controller.dart';
+import 'package:smart_chair_frontend/models/user.dart';
+import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
 import 'package:smart_chair_frontend/screens/loginPage/login_page.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 import 'package:smart_chair_frontend/utils/util_navigator.dart';
@@ -16,7 +19,7 @@ class CreateAccountPage extends StatefulWidget {
 class CreateAccountPageState extends State<CreateAccountPage>
     with ScreenUtil, NavigatorUtil {
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
-  final TextEditingController _pass = TextEditingController();
+  final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _name = TextEditingController();
@@ -114,7 +117,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                             title: TextFormField(
                               decoration: InputDecoration(labelText: 'Senha'),
                               obscureText: true,
-                              controller: _pass,
+                              controller: _password,
                               validator: (val) {
                                 if (val.isEmpty)
                                   return "A senha não pode ser vazia";
@@ -131,7 +134,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                               validator: (val) {
                                 if (val.isEmpty)
                                   return 'A senha não pode ser vazia';
-                                if (val != _pass.text)
+                                if (val != _password.text)
                                   return 'As senhas não coincidem';
                                 return null;
                               },
@@ -142,7 +145,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                           ),
                           BottomButton(primaryColor, customColor, "Criar Conta",
                               () {
-                            //validatePass();
+                            validatePass();
                           }),
                           Container(
                             child: GestureDetector(
@@ -175,18 +178,46 @@ class CreateAccountPageState extends State<CreateAccountPage>
     ));
   }
 
-/*  void validatePass() {
+  void validatePass() async {
+    List<String> ids = ['char01'];
+    String msg;
     if (_form.currentState.validate()) {
-      nextScreenNoReturn(
-          context,
-          ScanScreen(
-            pass: _pass.text,
-            email: _email.text,
-            name: _name.text,
-          ));
-    } else {
-      _showToast(context);
+      User user = new User();
+      user.email = _email.text;
+      user.password = _password.text;
+      user.chairId = ids;
+
+      msg = await createUser(user);
+      if (msg == '200') {
+        Navigator.pop(context);
+      } else {
+        _showAlertDialog(context, msg);
+      }
     }
+  }
+
+  void _showAlertDialog(BuildContext context, String msg) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(msg),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showToast(BuildContext context) {
@@ -198,5 +229,5 @@ class CreateAccountPageState extends State<CreateAccountPage>
             label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
-  }*/
+  }
 }

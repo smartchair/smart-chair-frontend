@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 class DevicePage extends StatelessWidget {
@@ -18,6 +19,16 @@ class DevicePage extends StatelessWidget {
         title: Text('Meus dispositivos'),
         centerTitle: true,
         backgroundColor: customColor,
+        actions: [
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ScanScreen())),
+            ),
+          ),
+        ],
       ),
       body: ListView.separated(
         separatorBuilder: (BuildContext context, int index) => const Divider(),

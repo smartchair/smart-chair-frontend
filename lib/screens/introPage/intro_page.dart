@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
-import 'package:smart_chair_frontend/screens/homePage/home_page.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 import 'widgets/card_intro.dart';
@@ -20,13 +18,12 @@ class _IntroPageState extends State<IntroPage> {
           children: [
             Text('Olá Fulano, como você está hoje?',
                 style: TextStyle(fontSize: 23, color: customColor)),
-            SizedBox(height: 45),
+            SizedBox(height: 35),
             CardsIntro('Estou bem!', 'assets/happiness.png'),
-            SizedBox(height: 45),
+            SizedBox(height: 35),
             CardsIntro('Está tudo certo!', 'assets/bored.png'),
-            SizedBox(height: 45),
-            CardsIntro('Podia estar melhor!', 'assets/sad.png'),
-            SizedBox(height: 45)
+            SizedBox(height: 35),
+            CardsIntro('Podia estar melhor!', 'assets/sad.png')
           ],
         ),
       ),
