@@ -2,5 +2,5 @@ class User {
   int id;
   String email;
   String password;
-  List<String> chairId;
+  List<String> chairs;
 }

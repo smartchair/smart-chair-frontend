@@ -1,10 +1,10 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:smart_chair_frontend/http/user_controller.dart';
 import 'package:smart_chair_frontend/models/user.dart';
-import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
 import 'package:smart_chair_frontend/screens/loginPage/login_page.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 import 'package:smart_chair_frontend/utils/util_navigator.dart';
@@ -179,16 +179,18 @@ class CreateAccountPageState extends State<CreateAccountPage>
   }
 
   void validatePass() async {
-    List<String> ids = ['char01'];
+    List<String> list = ['1', '2'];
     String msg;
     if (_form.currentState.validate()) {
       User user = new User();
       user.email = _email.text;
       user.password = _password.text;
-      user.chairId = ids;
+      user.chairs = list;
+
+      print(user.chairs);
 
       msg = await createUser(user);
-      if (msg == '200') {
+      if (msg == HttpStatus.created.toString()) {
         Navigator.pop(context);
       } else {
         _showAlertDialog(context, msg);

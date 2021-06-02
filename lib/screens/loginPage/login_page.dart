@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
 import 'package:smart_chair_frontend/http/user_controller.dart';
 import 'package:smart_chair_frontend/models/user.dart';
@@ -34,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
                 key: _form,
                 child: ListTile(
                   title: TextFormField(
-                    decoration: InputDecoration(labelText: 'Login'),
+                    decoration: InputDecoration(labelText: 'Email'),
                     controller: nameController,
                     validator: (val) {
                       if (val.isEmpty) return "O nome não pode ser vazio";
@@ -84,6 +85,7 @@ class _LoginPageState extends State<LoginPage> {
               child: BottomButton(primaryColor, customColor, "Login", () async {
                 // Navigator.push(context,
                 //     MaterialPageRoute(builder: (context) => IntroPage()));
+                SharedPreferences prefs = await SharedPreferences.getInstance();
                 User user = User();
 
                 user.email = nameController.text;
@@ -92,10 +94,11 @@ class _LoginPageState extends State<LoginPage> {
                 if (_form.currentState.validate()) {
                   var msg = await login(user);
                   if (msg == '200') {
+                    prefs.setString("email", nameController.text);
+
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => IntroPage()));
                   } else {
-                    //_showToast(context, msg);
                     _showAlertDialog(context, msg);
                   }
                 }
