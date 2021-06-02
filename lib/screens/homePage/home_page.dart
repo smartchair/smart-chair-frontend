@@ -4,7 +4,6 @@ import 'package:smart_chair_frontend/screens/devicesPage/device_page.dart';
 import 'package:smart_chair_frontend/screens/homePage/widgets/card_gamification.dart';
 import 'package:smart_chair_frontend/screens/homePage/widgets/card_sensors.dart';
 import 'package:smart_chair_frontend/screens/homePage/widgets/card_suggestions.dart';
-import 'package:smart_chair_frontend/screens/introPage/widgets/card_intro.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,23 +15,29 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 45),
-            CardGamification(),
-            SizedBox(height: 45),
-            CardSuggestions(),
-            SizedBox(height: 45),
-            CardSensor(),
-            SizedBox(height: 45),
-            BottomButton(primaryColor, customColor, "Meus dispositivos", () {
-              print("dispositivos");
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DevicePage()));
-            })
-          ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 45),
+              CardGamification(),
+              SizedBox(height: 45),
+              CardSuggestions(),
+              SizedBox(height: 45),
+              CardSensor(),
+              SizedBox(height: 45),
+              Padding(
+                padding: EdgeInsets.only(bottom: 30),
+                child: BottomButton(
+                    primaryColor, customColor, "Meus dispositivos", () {
+                  print("dispositivos");
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => DevicePage()));
+                }),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:smart_chair_frontend/screens/homePage/home_page.dart';
 import 'package:smart_chair_frontend/screens/metricsPage/metrics_page.dart';
+import 'package:smart_chair_frontend/screens/settingPage/setting_page.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
@@ -21,27 +22,7 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
     HomePage(),
     Container(height: 300, width: 300, child: LineChartSample1()),
     //MetricsPage(_createSampleData()),
-    SettingsList(
-      sections: [
-        SettingsSection(
-          title: 'FELIPE',
-          tiles: [
-            SettingsTile(
-              title: 'Language',
-              subtitle: 'English',
-              leading: Icon(Icons.language),
-              onPressed: (BuildContext context) {},
-            ),
-            SettingsTile.switchTile(
-              title: 'Use fingerprint',
-              leading: Icon(Icons.fingerprint),
-              switchValue: true,
-              onToggle: (bool value) {},
-            ),
-          ],
-        ),
-      ],
-    )
+    SettingPage()
   ];
 
   void _onItemTapped(int index) {
@@ -53,6 +34,28 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Image.asset(
+            'assets/logo_tcc.png',
+          ),
+        ),
+        bottomOpacity: 1,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+              icon: Icon(
+                Icons.account_circle_rounded,
+                size: 40,
+              ),
+            ),
+          )
+        ],
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
