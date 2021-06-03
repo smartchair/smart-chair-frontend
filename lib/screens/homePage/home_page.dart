@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: EdgeInsets.only(bottom: 30),
                 child: BottomButton(
-                    primaryColor, customColor, "Meus dispositivos", () {
+                    false, primaryColor, customColor, "Meus dispositivos", () {
                   print("dispositivos");
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => DevicePage()));

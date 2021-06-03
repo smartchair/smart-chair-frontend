@@ -21,19 +21,20 @@ Future<String> createUser(User user) async {
             body: json);
 
     print(response.statusCode);
+    var bodyResponse = jsonDecode(response.body);
     if (response.statusCode == HttpStatus.created) {
       print(jsonDecode(response.body));
-      return response.statusCode.toString(); //response.body;
+      return "Usuário criado com sucesso";
     } else {
       print(jsonDecode(response.body));
-      return Future.error('Deu ruim');
+      return Future.error(bodyResponse['errors'][0]['title']);
     }
   } catch (e) {
     return e.toString();
   }
 }
 
-Future<String> login(User user) async {
+Future<User> login(User user) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   String json =
@@ -47,14 +48,14 @@ Future<String> login(User user) async {
         },
         body: json);
 
-    //print(response.statusCode);
+    print(response.statusCode);
     var bodyResponse = jsonDecode(response.body);
     if (response.statusCode == HttpStatus.ok) {
       updateCookie(response, prefs);
 
-      return bodyResponse['data'][0]['status'].toString(); //response.body;
+      return user; //bodyResponse['data'][0]['status'].toString();
     } else {
-      return bodyResponse['errors'][0]['title'];
+      return Future.error(bodyResponse['errors'][0]['title']);
     }
   } catch (e) {
     return e;

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:smart_chair_frontend/http/chair_controller.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
+import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
+import 'package:smart_chair_frontend/stores/chair_store.dart';
+import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 class DevicePage extends StatefulWidget {
@@ -11,6 +16,21 @@ class DevicePage extends StatefulWidget {
 }
 
 class _DevicePageState extends State<DevicePage> {
+  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+  final ChairStore chairStore = GetIt.I<ChairStore>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    autorun((_) {
+      if (chairStore.listChairs.isEmpty) {
+        chairStore.getChair(userManagerStore.user.email);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,66 +45,37 @@ class _DevicePageState extends State<DevicePage> {
               icon: Icon(Icons.add),
               onPressed: () async {
                 // vai para a tela do QR
-                //SharedPreferences prefs = await SharedPreferences.getInstance();
                 Chair chair = new Chair();
                 chair.chairId = "chair05";
                 chair.chairNickname = 'Cadeira n ';
+                chair.userId = userManagerStore.user.email;
 
-                var msg = await addChair(chair);
-                print(msg);
-                // Navigator.push(context,
-                //   MaterialPageRoute(builder: (context) => ScanScreen()));
+                // chairStore.addChair(chair);
+
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ScanScreen()));
               },
             ),
           ),
         ],
       ),
-      body: FutureBuilder(
-          future: getChair(),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-              case ConnectionState.none:
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-
-              default:
-                if (!snapshot.hasError && snapshot.data.length >= 1) {
-                  return ListView.separated(
-                    separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
-                    itemCount:
-                        snapshot.data.length == 0 ? 1 : snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(snapshot.data[index]['chairNickname']),
-                      );
-                    },
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Container(
-                      child: Text(snapshot.error),
-                    ),
-                  );
-                } else {
-                  return Center(
-                    child:
-                        Container(child: Text('Nenhum dispositivo cadastrado')),
-                  );
-                }
-            }
-
-            // return ListView.builder(
-            //   itemCount: 1,
-            //   itemBuilder: (BuildContext context, int index) {
-            //     return ListTile(
-            //       title: Text('${devices[index]}'),
-            //     );
-            //   },
-            // );
-          }),
+      body: Observer(builder: (_) {
+        if (chairStore.loading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (!chairStore.loading && chairStore.listChairs.length == 0) {
+          return Center(child: Container(child: Text("Sem dispositivos")));
+        } else {
+          return ListView.separated(
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(),
+            itemCount: chairStore.listChairs.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                  title: Text(chairStore.listChairs[index].toString()));
+            },
+          );
+        }
+      }),
     );
   }
 }
