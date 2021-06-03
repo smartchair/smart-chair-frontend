@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
-import 'package:smart_chair_frontend/http/user_controller.dart';
-import 'package:smart_chair_frontend/models/user.dart';
+import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
+import 'package:smart_chair_frontend/errorBoxWidget/error_box.dart';
 import 'package:smart_chair_frontend/screens/createAccountPage/create_account_page.dart';
-import 'package:smart_chair_frontend/screens/introPage/intro_page.dart';
+import 'package:smart_chair_frontend/stores/login_store.dart';
+import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,9 +17,22 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final LoginStore loginStore = GetIt.I<LoginStore>();
+  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    when((_) => userManagerStore.user != null, () {
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => BottomNavigationBarMenu()));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,32 +45,35 @@ class _LoginPageState extends State<LoginPage> {
                 alignment: Alignment.center,
                 padding: EdgeInsets.all(10),
                 height: 150),
-            Container(
-              padding: EdgeInsets.all(15),
-              child: Form(
-                key: _form,
-                child: ListTile(
-                  title: TextFormField(
-                    decoration: InputDecoration(labelText: 'Email'),
-                    controller: nameController,
-                    validator: (val) {
-                      if (val.isEmpty) return "O nome não pode ser vazio";
-                      return null;
-                    },
-                  ),
+            Observer(
+              builder: (_) => Padding(
+                padding: EdgeInsets.all(8),
+                child: ErrorBox(
+                  message: loginStore.error,
                 ),
               ),
             ),
             Container(
               padding: EdgeInsets.all(15),
               child: ListTile(
-                title: TextFormField(
-                  decoration: InputDecoration(labelText: 'Senha'),
-                  controller: passwordController,
-                  validator: (val) {
-                    if (val.isEmpty) return "A senha não pode ser vazia";
-                    return null;
-                  },
+                title: Observer(
+                  builder: (_) => TextFormField(
+                      onChanged: loginStore.setEmail,
+                      decoration: InputDecoration(
+                          labelText: 'Email', errorText: loginStore.emailError),
+                      controller: nameController),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(15),
+              child: ListTile(
+                title: Observer(
+                  builder: (_) => TextFormField(
+                      onChanged: loginStore.setPass,
+                      decoration: InputDecoration(
+                          labelText: 'Senha', errorText: loginStore.passError),
+                      controller: passwordController),
                 ),
               ),
             ),
@@ -79,30 +98,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            Container(
-              height: 50,
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: BottomButton(primaryColor, customColor, "Login", () async {
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => IntroPage()));
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                User user = User();
-
-                user.email = nameController.text;
-                user.password = passwordController.text;
-
-                if (_form.currentState.validate()) {
-                  var msg = await login(user);
-                  if (msg == '200') {
-                    prefs.setString("email", nameController.text);
-
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => IntroPage()));
-                  } else {
-                    _showAlertDialog(context, msg);
-                  }
-                }
-              }),
+            Observer(
+              builder: (_) => Container(
+                height: 50,
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: BottomButton(loginStore.loading, primaryColor,
+                    customColor, "Login", loginStore.logInPressed),
+              ),
             ),
             Container(
               padding: EdgeInsets.only(top: 30),
