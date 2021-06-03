@@ -1,4 +1,3 @@
-
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/user_controller.dart';
 import 'package:smart_chair_frontend/models/user.dart';

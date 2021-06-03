@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class BottomButton extends StatelessWidget {
   final bool loading;
   final Color textColor;

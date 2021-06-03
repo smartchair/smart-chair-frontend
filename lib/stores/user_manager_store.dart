@@ -18,7 +18,7 @@ abstract class _UserManagerStore with Store {
 
   // @computed
   // bool get isLoggedIn => user != null;
-  
+
   Future<void> logout() async {
     //await UserRepository().logout();
     setUser(null);
