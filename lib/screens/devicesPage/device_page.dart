@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
+import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
@@ -49,10 +50,10 @@ class _DevicePageState extends State<DevicePage> {
                 chair.chairNickname = 'Cadeira n ';
                 chair.userId = userManagerStore.user.email;
 
-                chairStore.addChair(chair);
+                // chairStore.addChair(chair);
 
-                // Navigator.push(context,
-                //   MaterialPageRoute(builder: (context) => ScanScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ScanScreen()));
               },
             ),
           ),
