@@ -68,19 +68,6 @@ mixin _$ChairStore on _ChairStore, Store {
     return _$addChairAsyncAction.run(() => super.addChair(chair));
   }
 
-  final _$_ChairStoreActionController = ActionController(name: '_ChairStore');
-
-  @override
-  void setChairs(List<String> chairs) {
-    final _$actionInfo = _$_ChairStoreActionController.startAction(
-        name: '_ChairStore.setChairs');
-    try {
-      return super.setChairs(chairs);
-    } finally {
-      _$_ChairStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
   @override
   String toString() {
     return '''

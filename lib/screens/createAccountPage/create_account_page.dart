@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
+import 'dart:async';
 import 'package:smart_chair_frontend/errorBoxWidget/error_box.dart';
 import 'package:smart_chair_frontend/screens/loginPage/login_page.dart';
 import 'package:smart_chair_frontend/stores/create_account_store.dart';

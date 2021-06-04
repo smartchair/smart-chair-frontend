@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
+import 'package:smart_chair_frontend/http/chair_controller.dart';
+import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 import 'package:smart_chair_frontend/utils/util_button.dart';
 import 'package:smart_chair_frontend/utils/util_screen.dart';
@@ -106,11 +110,12 @@ class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
                         // })
                         BottomButton(false, primaryColor, customColor,
                             "Adicionar cadeira", () {
-                          // Chair chair = new Chair();
+                          Chair chair = new Chair();
                           // chair.chairId = "1";
                           // chair.userId = "1"
-                          //addChair(chair);
                           scanQR();
+                          chair = jsonDecode(_scanBarcode);
+                          addChairs(chair);
                         })
                       ],
                     ),

@@ -1,8 +1,11 @@
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/chair_controller.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/models/user.dart';
 import 'dart:async';
+
+import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 
 part 'chair_store.g.dart';
 
@@ -18,30 +21,30 @@ abstract class _ChairStore with Store {
   @observable
   bool loading = false;
 
-  ObservableList listChairs = ObservableList();
-
-  @action
-  void setChairs(List<String> chairs) {
-    listChairs.clear();
-    listChairs.addAll(chairs);
-    loading = false;
-  }
+  // ObservableMap mapChairs = ObservableMap();
+  //
+  // @action
+  // void setChairs(Map<String, dynamic> chairs) {
+  //   mapChairs.clear();
+  //   mapChairs.addAll(chairs);
+  //   loading = false;
+  // }
 
   @action
   Future<void> getChair(String email) async {
     loading = true;
     try {
-      List<String> newList = [];
       User user = User();
       user.email = email;
-      var chairs = await getChairs(user);
-      chairs.forEach((item) {
-        newList.add(item['chairNickname'].toString());
-      });
-      setChairs(newList);
+      GetIt.I<UserManagerStore>().user.chairs = await getChairs(user);
+
+      //setChairs(chairs);
+
     } catch (e) {
       error = e;
     }
+
+    loading = false;
   }
 
   @action
@@ -51,15 +54,10 @@ abstract class _ChairStore with Store {
 
     try {
       var result = await addChairs(chair);
-
-      result.forEach(
-        (element) {
-          listChairs.add(element['chairNickname']);
-        },
-      );
-      loading = false;
+      GetIt.I<UserManagerStore>().user.chairs.addAll(result);
     } catch (e) {
       error = e;
     }
+    loading = false;
   }
 }

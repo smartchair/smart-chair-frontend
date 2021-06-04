@@ -99,7 +99,7 @@ abstract class _CreateAccountStore with Store {
       User user = new User();
       user.email = email;
       user.password = password;
-      user.chairs = [];
+      user.chairs = {};
 
       result = await createUser(user);
     } catch (e) {

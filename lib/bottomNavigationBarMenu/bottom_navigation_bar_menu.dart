@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:settings_ui/settings_ui.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/screens/homePage/home_page.dart';
+import 'package:smart_chair_frontend/screens/loginPage/login_page.dart';
 import 'package:smart_chair_frontend/screens/metricsPage/metrics_page.dart';
 import 'package:smart_chair_frontend/screens/settingPage/setting_page.dart';
+import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
@@ -14,6 +17,8 @@ class BottomNavigationBarMenu extends StatefulWidget {
 
 class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
   int _selectedIndex = 0;
+
+  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -28,6 +33,16 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    when((_) => userManagerStore.user == null, () {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => LoginPage()));
     });
   }
 
@@ -48,6 +63,9 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: IconButton(
+              onPressed: () {
+                _showAlertDialog(context, 'VIRUS DETECTADO');
+              },
               icon: Icon(
                 Icons.account_circle_rounded,
                 size: 40,
@@ -92,6 +110,32 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
         data: data,
       )
     ];
+  }
+
+  void _showAlertDialog(BuildContext context, String msg) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(msg),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }
 

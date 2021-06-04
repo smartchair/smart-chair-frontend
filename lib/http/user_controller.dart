@@ -53,6 +53,8 @@ Future<User> login(User user) async {
     if (response.statusCode == HttpStatus.ok) {
       updateCookie(response, prefs);
 
+      user.token = response.headers['set-cookie'];
+
       return user; //bodyResponse['data'][0]['status'].toString();
     } else {
       return Future.error(bodyResponse['errors'][0]['title']);

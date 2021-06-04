@@ -2,5 +2,6 @@ class User {
   int id;
   String email;
   String password;
-  List<Object> chairs;
+  Map<String, dynamic> chairs = Map<String, dynamic>();
+  String token;
 }

@@ -9,7 +9,7 @@ import 'package:smart_chair_frontend/utils/const.dart';
 
 Map<String, String> headers = {};
 
-Future getChairs(User user) async {
+Future<Map<String, dynamic>> getChairs(User user) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   headers['cookie'] = prefs.getString("cookie");
 
@@ -28,7 +28,8 @@ Future getChairs(User user) async {
       print(bodyResponse['data'][0]['chairs']);
       return bodyResponse['data'][0]['chairs']; //chair.chairIds;
     } else {
-      return Future.error(bodyResponse); //"Bad request";
+      return Future.error(
+          "Erro para carregar seus dispositivos"); //"Bad request";
     }
   } catch (e) {
     return e;
