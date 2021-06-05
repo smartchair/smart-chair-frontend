@@ -9,6 +9,20 @@ part of 'chair_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$ChairStore on _ChairStore, Store {
+  Computed<bool> _$nameValidComputed;
+
+  @override
+  bool get nameValid => (_$nameValidComputed ??=
+          Computed<bool>(() => super.nameValid, name: '_ChairStore.nameValid'))
+      .value;
+  Computed<Function> _$deviceNamePressedComputed;
+
+  @override
+  Function get deviceNamePressed => (_$deviceNamePressedComputed ??=
+          Computed<Function>(() => super.deviceNamePressed,
+              name: '_ChairStore.deviceNamePressed'))
+      .value;
+
   final _$resultAtom = Atom(name: '_ChairStore.result');
 
   @override
@@ -54,6 +68,36 @@ mixin _$ChairStore on _ChairStore, Store {
     });
   }
 
+  final _$chairNicknameAtom = Atom(name: '_ChairStore.chairNickname');
+
+  @override
+  String get chairNickname {
+    _$chairNicknameAtom.reportRead();
+    return super.chairNickname;
+  }
+
+  @override
+  set chairNickname(String value) {
+    _$chairNicknameAtom.reportWrite(value, super.chairNickname, () {
+      super.chairNickname = value;
+    });
+  }
+
+  final _$chairIdAtom = Atom(name: '_ChairStore.chairId');
+
+  @override
+  String get chairId {
+    _$chairIdAtom.reportRead();
+    return super.chairId;
+  }
+
+  @override
+  set chairId(String value) {
+    _$chairIdAtom.reportWrite(value, super.chairId, () {
+      super.chairId = value;
+    });
+  }
+
   final _$getChairAsyncAction = AsyncAction('_ChairStore.getChair');
 
   @override
@@ -64,18 +108,18 @@ mixin _$ChairStore on _ChairStore, Store {
   final _$addChairAsyncAction = AsyncAction('_ChairStore.addChair');
 
   @override
-  Future<void> addChair(Chair chair) {
-    return _$addChairAsyncAction.run(() => super.addChair(chair));
+  Future<void> addChair() {
+    return _$addChairAsyncAction.run(() => super.addChair());
   }
 
   final _$_ChairStoreActionController = ActionController(name: '_ChairStore');
 
   @override
-  void setChairs(List<String> chairs) {
+  void setChairNickname(String value) {
     final _$actionInfo = _$_ChairStoreActionController.startAction(
-        name: '_ChairStore.setChairs');
+        name: '_ChairStore.setChairNickname');
     try {
-      return super.setChairs(chairs);
+      return super.setChairNickname(value);
     } finally {
       _$_ChairStoreActionController.endAction(_$actionInfo);
     }
@@ -86,7 +130,11 @@ mixin _$ChairStore on _ChairStore, Store {
     return '''
 result: ${result},
 error: ${error},
-loading: ${loading}
+loading: ${loading},
+chairNickname: ${chairNickname},
+chairId: ${chairId},
+nameValid: ${nameValid},
+deviceNamePressed: ${deviceNamePressed}
     ''';
   }
 }

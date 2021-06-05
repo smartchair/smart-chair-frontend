@@ -25,7 +25,7 @@ class _DevicePageState extends State<DevicePage> {
     super.initState();
 
     autorun((_) {
-      if (chairStore.listChairs.isEmpty) {
+      if (userManagerStore.user.chairs.isEmpty) {
         chairStore.getChair(userManagerStore.user.email);
       }
     });
@@ -45,14 +45,14 @@ class _DevicePageState extends State<DevicePage> {
               icon: Icon(Icons.add),
               onPressed: () async {
                 // vai para a tela do QR
-                Chair chair = new Chair();
-                chair.chairId = "chair05";
-                chair.chairNickname = 'Cadeira n ';
-                chair.userId = userManagerStore.user.email;
-
+                // Chair chair = new Chair();
+                // chair.chairId = "chair9013";
+                // chair.chairNickname = 'Cadeira test4 ';
+                // chair.userId = userManagerStore.user.email;
+                //
                 // chairStore.addChair(chair);
 
-                Navigator.push(context,
+                Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => ScanScreen()));
               },
             ),
@@ -62,20 +62,49 @@ class _DevicePageState extends State<DevicePage> {
       body: Observer(builder: (_) {
         if (chairStore.loading) {
           return Center(child: CircularProgressIndicator());
-        } else if (!chairStore.loading && chairStore.listChairs.length == 0) {
+        } else if (!chairStore.loading &&
+            userManagerStore.user.chairs.length == 0) {
           return Center(child: Container(child: Text("Sem dispositivos")));
         } else {
           return ListView.separated(
             separatorBuilder: (BuildContext context, int index) =>
                 const Divider(),
-            itemCount: chairStore.listChairs.length,
+            itemCount: userManagerStore.user.chairs.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                  title: Text(chairStore.listChairs[index].toString()));
+              var listNameChairs = userManagerStore.user.chairs.values.toList();
+              return ListTile(title: Text(listNameChairs[index]));
             },
           );
         }
       }),
+    );
+  }
+
+  void showAlertDialog(BuildContext context) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: TextFormField(
+                  decoration: InputDecoration(labelText: 'Nome'),
+                  onChanged: chairStore.setChairNickname),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 }

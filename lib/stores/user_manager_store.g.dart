@@ -24,6 +24,13 @@ mixin _$UserManagerStore on _UserManagerStore, Store {
     });
   }
 
+  final _$logoutAsyncAction = AsyncAction('_UserManagerStore.logout');
+
+  @override
+  Future<void> logout() {
+    return _$logoutAsyncAction.run(() => super.logout());
+  }
+
   final _$_UserManagerStoreActionController =
       ActionController(name: '_UserManagerStore');
 
