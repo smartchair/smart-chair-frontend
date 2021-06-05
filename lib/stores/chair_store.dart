@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/chair_controller.dart';
@@ -21,6 +22,18 @@ abstract class _ChairStore with Store {
   @observable
   bool loading = false;
 
+  @observable
+  String chairNickname;
+
+  @observable
+  String chairId;
+
+  @observable
+  bool btnClicked = false;
+
+  @action
+  void setChairNickname(String value) => chairNickname = value;
+
   // ObservableMap mapChairs = ObservableMap();
   //
   // @action
@@ -29,6 +42,19 @@ abstract class _ChairStore with Store {
   //   mapChairs.addAll(chairs);
   //   loading = false;
   // }
+
+  @computed
+  bool get nameValid => chairNickname != null && chairNickname != '';
+  String get nameError {
+    if (chairNickname == null || nameValid) {
+      return null;
+    } else {
+      return 'Nome obrigatório';
+    }
+  }
+
+  @computed
+  Function get deviceNamePressed => nameValid && !loading ? addChair : null;
 
   @action
   Future<void> getChair(String email) async {
@@ -48,16 +74,24 @@ abstract class _ChairStore with Store {
   }
 
   @action
-  Future<void> addChair(Chair chair) async {
+  Future<void> addChair() async {
+    btnClicked = true;
     loading = true;
     error = null;
 
-    try {
-      var result = await addChairs(chair);
-      GetIt.I<UserManagerStore>().user.chairs.addAll(result);
-    } catch (e) {
-      error = e;
+    if (chairNickname != null) {
+      var data = {"chairId": "$chairId", "chairNickname": "$chairNickname"};
+      print('store data $data');
+      try {
+        var result = await addChairs(data);
+        GetIt.I<UserManagerStore>().user.chairs.addAll(result);
+        chairId = null;
+        chairNickname = null;
+      } catch (e) {
+        error = e;
+      }
     }
+
     loading = false;
   }
 }

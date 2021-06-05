@@ -3,15 +3,26 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
 import 'package:smart_chair_frontend/http/chair_controller.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
+import 'package:smart_chair_frontend/models/user.dart';
+import 'package:smart_chair_frontend/screens/chairNamePage/chair_name_page.dart';
+import 'package:smart_chair_frontend/screens/devicesPage/device_page.dart';
+import 'package:smart_chair_frontend/stores/chair_store.dart';
+import 'package:smart_chair_frontend/stores/user_manager_store.dart';
+import 'package:smart_chair_frontend/utils/const.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 import 'package:smart_chair_frontend/utils/util_button.dart';
 import 'package:smart_chair_frontend/utils/util_screen.dart';
 import 'dart:async';
 
 class ScanScreen extends StatefulWidget {
+  ChairStore chairStore = GetIt.I<ChairStore>();
+
+  UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
   // final String name;
   // final String email;
   // final String pass;
@@ -29,7 +40,8 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
-  String _scanBarcode = "unknown";
+  final ChairStore chairStore = GetIt.I<ChairStore>();
+  String _scanBarcode = "";
   //final String name;
   //final String email;
   //final String pass;
@@ -37,15 +49,27 @@ class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
   //_ScanState(this.name, this.email, this.pass);
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    when((_) => chairStore.chairId != null, () {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => ChairNamePage()));
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Adicionar dispositivo'),
           elevation: 0,
-          backgroundColor: Colors.transparent,
+          backgroundColor: customColor,
           leading: IconButton(
             icon: Icon(
-              Icons.arrow_back_ios,
+              Icons.arrow_back,
               color: Colors.black,
             ),
             onPressed: () => Navigator.pop(context),
@@ -104,18 +128,12 @@ class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
                         SizedBox(
                           height: 20,
                         ),
-                        // BottomButton(primaryColor, customColor, "Abrir camera",
-                        //     () {
-                        //   scanQR();
-                        // })
                         BottomButton(false, primaryColor, customColor,
-                            "Adicionar cadeira", () {
-                          Chair chair = new Chair();
-                          // chair.chairId = "1";
-                          // chair.userId = "1"
-                          scanQR();
-                          chair = jsonDecode(_scanBarcode);
-                          addChairs(chair);
+                            "Adicionar dispositivo", () {
+                          scanQR(context);
+
+                          // userManagerStore.user.chairs = jsonDecode(_scanBarcode);
+                          // addChairs( userManagerStore.user.chairs);
                         })
                       ],
                     ),
@@ -127,12 +145,21 @@ class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
         ));
   }
 
-  Future<void> scanQR() async {
+  Future<void> scanQR(BuildContext context) async {
     String barcodeScanRes;
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
       print(barcodeScanRes);
+
+      chairStore.chairId = jsonDecode(barcodeScanRes)['chairId'];
+      print('chair stpre chairId ${chairStore.chairId}');
+
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (_) => ChairNamePage()));
+
+      //_showAlertDialog(context);
+      //chairStore.addChair(jsonDecode(barcodeScanRes));
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }

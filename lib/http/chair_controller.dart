@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/models/user.dart';
+import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'dart:io';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 Map<String, String> headers = {};
+
+final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
 
 Future<Map<String, dynamic>> getChairs(User user) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -36,18 +40,21 @@ Future<Map<String, dynamic>> getChairs(User user) async {
   }
 }
 
-Future addChairs(Chair chair) async {
+Future addChairs(Map<String, dynamic> chairMap) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
+  //print(' chairMap ${chairMap['chairId']}, ${chairMap['chairNickname']}');
+
   String json =
-      '{"chairId": "${chair.chairId}", "chairNickname" : "${chair.chairNickname}" }';
+      '{"chairId": "${chairMap['chairId']}", "chairNickname" : "${chairMap['chairNickname']}" }';
   print(json);
 
   try {
     headers['cookie'] = prefs.getString("cookie");
 
     var response = await http.post(
-        Uri.https("$URL_PATH_API", "/users/${chair.userId}/add-chair"),
+        Uri.https(
+            "$URL_PATH_API", "/users/${userManagerStore.user.email}/add-chair"),
         headers: headers,
         body: json);
 

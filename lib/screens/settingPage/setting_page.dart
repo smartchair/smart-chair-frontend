@@ -16,18 +16,6 @@ class SettingPage extends StatelessWidget {
           SettingsSection(
             tiles: [
               SettingsTile(
-                title: 'Language',
-                subtitle: 'English',
-                leading: Icon(Icons.language),
-                onPressed: (BuildContext context) {},
-              ),
-              SettingsTile.switchTile(
-                title: 'Use fingerprint',
-                leading: Icon(Icons.fingerprint),
-                switchValue: true,
-                onToggle: (bool value) {},
-              ),
-              SettingsTile(
                 title: 'Sair',
                 leading: Icon(Icons.logout),
                 onPressed: (BuildContext context) {

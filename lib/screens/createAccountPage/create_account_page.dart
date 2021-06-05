@@ -121,7 +121,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                       Container(
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => LoginPage()));
@@ -163,7 +163,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
         ),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.push(
+            onPressed: () => Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (_) => LoginPage())),
             child: const Text('OK'),
           ),

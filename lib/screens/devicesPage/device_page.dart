@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
+import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
@@ -28,12 +29,6 @@ class _DevicePageState extends State<DevicePage> {
         chairStore.getChair(userManagerStore.user.email);
       }
     });
-
-    // autorun((_) {
-    //   if (chairStore.mapChairs.isEmpty) {
-    //     chairStore.getChair(userManagerStore.user.email);
-    //   }
-    // });
   }
 
   @override
@@ -50,15 +45,15 @@ class _DevicePageState extends State<DevicePage> {
               icon: Icon(Icons.add),
               onPressed: () async {
                 // vai para a tela do QR
-                Chair chair = new Chair();
-                chair.chairId = "chair9013";
-                chair.chairNickname = 'Cadeira test4 ';
-                chair.userId = userManagerStore.user.email;
+                // Chair chair = new Chair();
+                // chair.chairId = "chair9013";
+                // chair.chairNickname = 'Cadeira test4 ';
+                // chair.userId = userManagerStore.user.email;
+                //
+                // chairStore.addChair(chair);
 
-                chairStore.addChair(chair);
-
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => ScanScreen()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => ScanScreen()));
               },
             ),
           ),
@@ -82,6 +77,34 @@ class _DevicePageState extends State<DevicePage> {
           );
         }
       }),
+    );
+  }
+
+  void showAlertDialog(BuildContext context) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: TextFormField(
+                  decoration: InputDecoration(labelText: 'Nome'),
+                  onChanged: chairStore.setChairNickname),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 }
