@@ -20,7 +20,6 @@ abstract class _ChairStore with Store {
 
     chairNickname = chair.chairNickname ?? '';
     chairId = chair.chairId ?? '';
-
   }
 
   Chair chair;
