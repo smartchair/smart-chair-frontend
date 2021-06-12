@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
+import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
+import 'package:smart_chair_frontend/screens/chairNamePage/chair_name_page.dart';
 import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
+import 'package:smart_chair_frontend/screens/loginPage/login_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
@@ -24,10 +28,13 @@ class _DevicePageState extends State<DevicePage> {
     // TODO: implement initState
     super.initState();
 
-    autorun((_) {
-      if (userManagerStore.user.chairs.isEmpty) {
-        chairStore.getChair(userManagerStore.user.email);
-      }
+    when((_) => userManagerStore.user.chairs.isEmpty, () {
+      chairStore.getChair();
+    });
+
+    when((_) => chairStore.error != null, () {
+      _showAlertDialog(context, chairStore.error);
+      chairStore.setError(null);
     });
   }
 
@@ -38,12 +45,17 @@ class _DevicePageState extends State<DevicePage> {
         title: Text('Meus dispositivos'),
         centerTitle: true,
         backgroundColor: customColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (_) => BottomNavigationBarMenu())),
+        ),
         actions: [
           Padding(
             padding: EdgeInsets.all(10.0),
             child: IconButton(
               icon: Icon(Icons.add),
-              onPressed: () async {
+              onPressed: () {
                 // vai para a tela do QR
                 // Chair chair = new Chair();
                 // chair.chairId = "chair9013";
@@ -51,8 +63,7 @@ class _DevicePageState extends State<DevicePage> {
                 // chair.userId = userManagerStore.user.email;
                 //
                 // chairStore.addChair(chair);
-
-                Navigator.pushReplacement(context,
+                Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ScanScreen()));
               },
             ),
@@ -64,23 +75,80 @@ class _DevicePageState extends State<DevicePage> {
           return Center(child: CircularProgressIndicator());
         } else if (!chairStore.loading &&
             userManagerStore.user.chairs.length == 0) {
-          return Center(child: Container(child: Text("Sem dispositivos")));
+          return Center(
+            child: Container(
+              child: Text(
+                "Nenhum dispositivo cadastrado",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              ),
+            ),
+          );
+        } else if (chairStore.error == "Por favor faça seu login novamente") {
+          return Center(
+            child: Container(
+              child: Column(
+                children: [
+                  Text(chairStore.error),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  BottomButton(false, primaryColor, customColor, "Login", () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => LoginPage()));
+                  })
+                ],
+              ),
+            ),
+          );
         } else {
-          return ListView.separated(
-            separatorBuilder: (BuildContext context, int index) =>
-                const Divider(),
-            itemCount: userManagerStore.user.chairs.length,
-            itemBuilder: (context, index) {
-              var listNameChairs = userManagerStore.user.chairs.values.toList();
-              return ListTile(title: Text(listNameChairs[index]));
-            },
+          return RefreshIndicator(
+            onRefresh: () => chairStore.getChair(),
+            child: ListView.separated(
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(
+                thickness: 2,
+              ),
+              itemCount: userManagerStore.user.chairs.length,
+              itemBuilder: (context, index) {
+                var listNameChairs =
+                    userManagerStore.user.chairs.values.toList();
+                var listIdsChairs = userManagerStore.user.chairs.keys.toList();
+                return Container(
+                  padding: EdgeInsets.all(8),
+                  child: Dismissible(
+                    key: Key(DateTime.now().microsecondsSinceEpoch.toString()),
+                    background: Container(
+                      padding: EdgeInsets.all(10),
+                      color: Colors.red[400],
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child:
+                            Icon(Icons.delete, size: 30, color: Colors.black54),
+                      ),
+                    ),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) => userManagerStore.user.chairs
+                        .removeWhere(
+                            (key, value) => value == listNameChairs[index]),
+                    child: ListTile(
+                      title: Text(listNameChairs[index]),
+                      trailing: IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => _showConfirmDialog(context,
+                            listNameChairs[index], listIdsChairs[index]),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         }
       }),
     );
   }
 
-  void showAlertDialog(BuildContext context) {
+  void _showAlertDialog(BuildContext context, String msg) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -90,9 +158,7 @@ class _DevicePageState extends State<DevicePage> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 20),
-              child: TextFormField(
-                  decoration: InputDecoration(labelText: 'Nome'),
-                  onChanged: chairStore.setChairNickname),
+              child: Text(msg),
             ),
           ],
         ),
@@ -100,6 +166,45 @@ class _DevicePageState extends State<DevicePage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showConfirmDialog(
+      BuildContext context, String chairName, String listIdsChairs) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Container(
+          width: 50,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Text('Deseja editar o nome \n de seu dispositivo ?'),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Chair chair = Chair();
+              chair.chairId = listIdsChairs;
+              chair.chairNickname = chairName;
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ChairNamePage(
+                            chair: chair,
+                          )));
             },
             child: const Text('OK'),
           ),

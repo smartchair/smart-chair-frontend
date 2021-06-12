@@ -1,14 +1,12 @@
 class Chair {
   String chairId;
   String chairNickname;
-  String userId;
-  List<String> chairIds = [];
 
-  Chair({this.chairIds});
+  Chair();
 
-  Chair.fromJson(Map<String, dynamic> json) {
-    json['chairIds'].forEach((element) {
-      this.chairIds.add(element);
-    });
+  Chair.toAdd({this.chairId, this.chairNickname});
+
+  String addChairToJson() {
+    return '{"chairId": "${this.chairId}", "chairNickname": "${this.chairNickname}"}';
   }
 }

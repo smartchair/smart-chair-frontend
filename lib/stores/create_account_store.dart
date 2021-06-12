@@ -96,12 +96,7 @@ abstract class _CreateAccountStore with Store {
     error = null;
 
     try {
-      User user = new User();
-      user.email = email;
-      user.password = password;
-      user.chairs = {};
-
-      result = await createUser(user);
+      result = await createUser(email, password, {});
     } catch (e) {
       error = e;
     }

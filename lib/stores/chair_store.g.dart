@@ -98,11 +98,26 @@ mixin _$ChairStore on _ChairStore, Store {
     });
   }
 
+  final _$btnClickedAtom = Atom(name: '_ChairStore.btnClicked');
+
+  @override
+  bool get btnClicked {
+    _$btnClickedAtom.reportRead();
+    return super.btnClicked;
+  }
+
+  @override
+  set btnClicked(bool value) {
+    _$btnClickedAtom.reportWrite(value, super.btnClicked, () {
+      super.btnClicked = value;
+    });
+  }
+
   final _$getChairAsyncAction = AsyncAction('_ChairStore.getChair');
 
   @override
-  Future<void> getChair(String email) {
-    return _$getChairAsyncAction.run(() => super.getChair(email));
+  Future<void> getChair() {
+    return _$getChairAsyncAction.run(() => super.getChair());
   }
 
   final _$addChairAsyncAction = AsyncAction('_ChairStore.addChair');
@@ -113,6 +128,17 @@ mixin _$ChairStore on _ChairStore, Store {
   }
 
   final _$_ChairStoreActionController = ActionController(name: '_ChairStore');
+
+  @override
+  void setError(String value) {
+    final _$actionInfo =
+        _$_ChairStoreActionController.startAction(name: '_ChairStore.setError');
+    try {
+      return super.setError(value);
+    } finally {
+      _$_ChairStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setChairNickname(String value) {
@@ -133,6 +159,7 @@ error: ${error},
 loading: ${loading},
 chairNickname: ${chairNickname},
 chairId: ${chairId},
+btnClicked: ${btnClicked},
 nameValid: ${nameValid},
 deviceNamePressed: ${deviceNamePressed}
     ''';

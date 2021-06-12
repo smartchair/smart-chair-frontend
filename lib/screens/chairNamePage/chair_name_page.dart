@@ -3,19 +3,29 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
+import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/screens/devicesPage/device_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 class ChairNamePage extends StatefulWidget {
-  ChairNamePage({Key key}) : super(key: key);
+  ChairNamePage({this.chair});
+
+  final Chair chair;
 
   @override
-  _ChairNamePageState createState() => _ChairNamePageState();
+  _ChairNamePageState createState() => _ChairNamePageState(chair);
 }
 
 class _ChairNamePageState extends State<ChairNamePage> {
-  final ChairStore chairStore = GetIt.I<ChairStore>();
+  _ChairNamePageState(Chair chair)
+      : edit = chair.chairNickname != null,
+        chairStore = ChairStore(chair: chair ?? Chair());
+
+  final ChairStore chairStore;
+  // final ChairStore chairStore = GetIt.I<ChairStore>();
+
+  bool edit;
 
   @override
   void initState() {
@@ -23,7 +33,9 @@ class _ChairNamePageState extends State<ChairNamePage> {
     super.initState();
 
     when((_) => (!chairStore.loading && chairStore.btnClicked), () {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => DevicePage()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => DevicePage()));
+
       chairStore.btnClicked = false;
     });
   }
@@ -31,6 +43,9 @@ class _ChairNamePageState extends State<ChairNamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: customColor,
+      ),
       body: Center(
         child: Container(
           child: Column(
@@ -38,7 +53,9 @@ class _ChairNamePageState extends State<ChairNamePage> {
             children: [
               Container(
                 child: Text(
-                  'Salvar dispositivo',
+                  edit
+                      ? 'Editar nome do seu dispositivo'
+                      : 'Defina um nome para seu dispositivo',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
@@ -49,6 +66,7 @@ class _ChairNamePageState extends State<ChairNamePage> {
                 builder: (_) => Container(
                   padding: EdgeInsets.symmetric(horizontal: 30),
                   child: TextFormField(
+                    initialValue: edit ? chairStore.chairNickname : null,
                     onChanged: chairStore.setChairNickname,
                     decoration: InputDecoration(
                         labelText: 'Nome do dispositivo',

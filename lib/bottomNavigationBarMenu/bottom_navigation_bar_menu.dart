@@ -7,7 +7,6 @@ import 'package:smart_chair_frontend/screens/metricsPage/metrics_page.dart';
 import 'package:smart_chair_frontend/screens/settingPage/setting_page.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 class BottomNavigationBarMenu extends StatefulWidget {
   @override
@@ -25,7 +24,7 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    Container(height: 300, width: 300, child: LineChartSample1()),
+    Container(height: 300, width: 300, child: BarChartTemp()),
     //MetricsPage(_createSampleData()),
     SettingPage()
   ];
@@ -93,24 +92,24 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
     );
   }
 
-  static List<charts.Series<TimeSeriesSales, DateTime>> _createSampleData() {
-    final data = [
-      new TimeSeriesSales(new DateTime(2017, 9, 19), 5),
-      new TimeSeriesSales(new DateTime(2017, 9, 26), 25),
-      new TimeSeriesSales(new DateTime(2017, 10, 3), 100),
-      new TimeSeriesSales(new DateTime(2017, 10, 10), 75),
-    ];
-
-    return [
-      new charts.Series<TimeSeriesSales, DateTime>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (TimeSeriesSales sales, _) => sales.time,
-        measureFn: (TimeSeriesSales sales, _) => sales.sales,
-        data: data,
-      )
-    ];
-  }
+  // static List<charts.Series<TimeSeriesSales, DateTime>> _createSampleData() {
+  //   final data = [
+  //     new TimeSeriesSales(new DateTime(2017, 9, 19), 5),
+  //     new TimeSeriesSales(new DateTime(2017, 9, 26), 25),
+  //     new TimeSeriesSales(new DateTime(2017, 10, 3), 100),
+  //     new TimeSeriesSales(new DateTime(2017, 10, 10), 75),
+  //   ];
+  //
+  //   return [
+  //     new charts.Series<TimeSeriesSales, DateTime>(
+  //       id: 'Sales',
+  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+  //       domainFn: (TimeSeriesSales sales, _) => sales.time,
+  //       measureFn: (TimeSeriesSales sales, _) => sales.sales,
+  //       data: data,
+  //     )
+  //   ];
+  // }
 
   void _showAlertDialog(BuildContext context, String msg) {
     showDialog<String>(

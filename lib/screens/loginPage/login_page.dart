@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final LoginStore loginStore = GetIt.I<LoginStore>();
+  final LoginStore loginStore = LoginStore();
   final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();

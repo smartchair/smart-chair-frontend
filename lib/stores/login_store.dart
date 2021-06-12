@@ -61,11 +61,7 @@ abstract class _LoginStore with Store {
     error = null;
 
     try {
-      User user = new User();
-      user.email = email;
-      user.password = password;
-
-      final result = await login(user);
+      final result = await login(email, password);
       GetIt.I<UserManagerStore>().setUser(result);
     } catch (e) {
       error = e;

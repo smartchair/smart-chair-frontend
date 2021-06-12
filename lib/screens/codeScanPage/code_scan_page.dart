@@ -6,58 +6,48 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
-import 'package:smart_chair_frontend/http/chair_controller.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
-import 'package:smart_chair_frontend/models/user.dart';
 import 'package:smart_chair_frontend/screens/chairNamePage/chair_name_page.dart';
 import 'package:smart_chair_frontend/screens/devicesPage/device_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
-import 'package:smart_chair_frontend/utils/const.dart';
-import 'package:smart_chair_frontend/utils/util_button.dart';
 import 'package:smart_chair_frontend/utils/util_screen.dart';
 import 'dart:async';
 
 class ScanScreen extends StatefulWidget {
-  ChairStore chairStore = GetIt.I<ChairStore>();
-
-  UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
-  // final String name;
-  // final String email;
-  // final String pass;
-  //
-  // ScanScreen({
-  //   Key key,
-  //   this.name,
-  //   this.email,
-  //   this.pass,
-  // }) : super(key: key);
-
   @override
-  _ScanState createState() =>
-      new _ScanState(/*this.name, this.email, this.pass*/);
+  _ScanState createState() => new _ScanState();
 }
 
-class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
-  final ChairStore chairStore = GetIt.I<ChairStore>();
+class _ScanState extends State<ScanScreen> with ScreenUtil {
+  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+  final ChairStore chairStore = ChairStore();
+  final ChairStore chairStoreGlobal = GetIt.I<ChairStore>();
   String _scanBarcode = "";
-  //final String name;
-  //final String email;
-  //final String pass;
-
-  //_ScanState(this.name, this.email, this.pass);
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    when((_) => chairStore.chairId != null, () {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    when((_) => chairStore.chairId != '', () {
+      if (userManagerStore.user.chairs.containsKey(chairStore.chairId)) {
+        chairStoreGlobal.setError("Cadeira já cadastrada");
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => DevicePage()));
+        //chairStore.chairId = null;
+      } else {
+        //chairStore.setError(null);
+        Chair chair = Chair();
+        chair.chairId = chairStore.chairId;
         Navigator.push(
-            context, MaterialPageRoute(builder: (_) => ChairNamePage()));
-      });
+            context,
+            MaterialPageRoute(
+                builder: (_) => ChairNamePage(
+                      chair: chair,
+                    )));
+      }
     });
   }
 
@@ -153,7 +143,7 @@ class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
       print(barcodeScanRes);
 
       chairStore.chairId = jsonDecode(barcodeScanRes)['chairId'];
-      print('chair stpre chairId ${chairStore.chairId}');
+      print('chair store chairId ${chairStore.chairId}');
 
       // Navigator.push(
       //     context, MaterialPageRoute(builder: (_) => ChairNamePage()));
