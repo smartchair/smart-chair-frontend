@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
 import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
+import 'dart:async';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/screens/chairNamePage/chair_name_page.dart';
 import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
@@ -29,8 +30,12 @@ class _DevicePageState extends State<DevicePage> {
     super.initState();
 
     when((_) => userManagerStore.user.chairs.isEmpty, () {
-      chairStore.getChair();
+      Future.delayed(Duration(milliseconds: 200), chairStore.getChair);
     });
+
+    // autorun((_) {
+    //   Future.delayed(Duration(milliseconds: 200), chairStore.getChair);
+    // });
 
     when((_) => chairStore.error != null, () {
       _showAlertDialog(context, chairStore.error);
@@ -56,13 +61,6 @@ class _DevicePageState extends State<DevicePage> {
             child: IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                // vai para a tela do QR
-                // Chair chair = new Chair();
-                // chair.chairId = "chair9013";
-                // chair.chairNickname = 'Cadeira test4 ';
-                // chair.userId = userManagerStore.user.email;
-                //
-                // chairStore.addChair(chair);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ScanScreen()));
               },
@@ -127,9 +125,45 @@ class _DevicePageState extends State<DevicePage> {
                       ),
                     ),
                     direction: DismissDirection.endToStart,
-                    onDismissed: (direction) => userManagerStore.user.chairs
-                        .removeWhere(
-                            (key, value) => value == listNameChairs[index]),
+                    confirmDismiss: (direction) {
+                      return showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          content: Container(
+                            width: 50,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child:
+                                      Text('Deseja excluir esse dispositivo ?'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                              child: const Text('Cancelar'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                              child: const Text('Sim'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    onDismissed: (direction) {
+                      chairStore.setChairId(listIdsChairs[index]);
+                      chairStore.removeChair();
+                    },
                     child: ListTile(
                       title: Text(listNameChairs[index]),
                       trailing: IconButton(
@@ -195,6 +229,12 @@ class _DevicePageState extends State<DevicePage> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
               Chair chair = Chair();
               chair.chairId = listIdsChairs;
               chair.chairNickname = chairName;
@@ -206,7 +246,7 @@ class _DevicePageState extends State<DevicePage> {
                             chair: chair,
                           )));
             },
-            child: const Text('OK'),
+            child: const Text('Sim'),
           ),
         ],
       ),

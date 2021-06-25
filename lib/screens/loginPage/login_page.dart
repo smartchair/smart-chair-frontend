@@ -19,7 +19,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final LoginStore loginStore = LoginStore();
   final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
-  final GlobalKey<FormState> _form = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -103,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50,
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: BottomButton(loginStore.loading, primaryColor,
-                    customColor, "Login", loginStore.logInPressed),
+                    customColor, "Entrar", loginStore.logInPressed),
               ),
             ),
             Container(
@@ -132,30 +131,6 @@ class _LoginPageState extends State<LoginPage> {
             )
           ],
         ),
-      ),
-    );
-  }
-
-  void _showAlertDialog(BuildContext context, String msg) {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        content: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Text(msg),
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'OK'),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }

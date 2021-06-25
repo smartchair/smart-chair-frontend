@@ -22,6 +22,10 @@ abstract class _ChairStore with Store {
     chairId = chair.chairId ?? '';
   }
 
+  // _ChairStore.getChairs() {
+  //   getChair();
+  // }
+
   Chair chair;
 
   @observable
@@ -34,7 +38,7 @@ abstract class _ChairStore with Store {
   bool loading = false;
 
   @observable
-  String chairNickname;
+  String chairNickname = '';
 
   @observable
   String chairId;
@@ -45,10 +49,13 @@ abstract class _ChairStore with Store {
   @observable
   bool edit = false;
 
+  @observable
+  String selectedChair;
+
   @computed
   bool get nameValid => chairNickname != null && chairNickname != '';
   String get nameError {
-    if (chairNickname == null || nameValid) {
+    if (chairNickname.isNotEmpty || nameValid) {
       return null;
     } else {
       return 'Nome obrigatório';
@@ -65,12 +72,19 @@ abstract class _ChairStore with Store {
   void setChairNickname(String value) => chairNickname = value;
 
   @action
+  void setChairId(String value) => chairId = value;
+
+  @action
+  void setChangedChair(String value) => selectedChair = value;
+
+  @action
   Future<void> getChair() async {
     loading = true;
     error = null;
     try {
       GetIt.I<UserManagerStore>().user.chairs =
           await getChairs(GetIt.I<UserManagerStore>().user.email);
+      selectedChair = GetIt.I<UserManagerStore>().user.chairs.keys.first;
 
       //setChairs(chairs);
 
@@ -91,16 +105,26 @@ abstract class _ChairStore with Store {
     //chair.chairId = chairId;
 
     try {
-      print("$chairId,$chairNickname");
-      print("${chair.chairId},${chair.chairNickname}");
       var result = await addChairs(chairId, chairNickname);
-      print(result);
+
       GetIt.I<UserManagerStore>().user.chairs.addAll(result);
-      _reset();
+      //_reset();
     } catch (e) {
       error = e;
     }
 
+    loading = false;
+  }
+
+  Future<void> removeChair() async {
+    loading = true;
+    try {
+      await removeChairs(chairId);
+      userManagerStore.user.chairs.removeWhere((key, value) => key == chairId);
+      getChair();
+    } catch (e) {
+      error = e;
+    }
     loading = false;
   }
 

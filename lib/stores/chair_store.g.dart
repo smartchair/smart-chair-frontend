@@ -113,6 +113,36 @@ mixin _$ChairStore on _ChairStore, Store {
     });
   }
 
+  final _$editAtom = Atom(name: '_ChairStore.edit');
+
+  @override
+  bool get edit {
+    _$editAtom.reportRead();
+    return super.edit;
+  }
+
+  @override
+  set edit(bool value) {
+    _$editAtom.reportWrite(value, super.edit, () {
+      super.edit = value;
+    });
+  }
+
+  final _$selectedChairAtom = Atom(name: '_ChairStore.selectedChair');
+
+  @override
+  String get selectedChair {
+    _$selectedChairAtom.reportRead();
+    return super.selectedChair;
+  }
+
+  @override
+  set selectedChair(String value) {
+    _$selectedChairAtom.reportWrite(value, super.selectedChair, () {
+      super.selectedChair = value;
+    });
+  }
+
   final _$getChairAsyncAction = AsyncAction('_ChairStore.getChair');
 
   @override
@@ -152,6 +182,28 @@ mixin _$ChairStore on _ChairStore, Store {
   }
 
   @override
+  void setChairId(String value) {
+    final _$actionInfo = _$_ChairStoreActionController.startAction(
+        name: '_ChairStore.setChairId');
+    try {
+      return super.setChairId(value);
+    } finally {
+      _$_ChairStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setChangedChair(String value) {
+    final _$actionInfo = _$_ChairStoreActionController.startAction(
+        name: '_ChairStore.setChangedChair');
+    try {
+      return super.setChangedChair(value);
+    } finally {
+      _$_ChairStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 result: ${result},
@@ -160,6 +212,8 @@ loading: ${loading},
 chairNickname: ${chairNickname},
 chairId: ${chairId},
 btnClicked: ${btnClicked},
+edit: ${edit},
+selectedChair: ${selectedChair},
 nameValid: ${nameValid},
 deviceNamePressed: ${deviceNamePressed}
     ''';

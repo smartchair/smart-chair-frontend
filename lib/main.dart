@@ -5,6 +5,7 @@ import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/current_chair_data_store.dart';
 import 'package:smart_chair_frontend/stores/graph_data_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
+import 'package:smart_chair_frontend/utils/const.dart';
 import 'screens/loginPage/login_page.dart';
 
 void main() {
@@ -26,8 +27,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'POC APP FLUTTER',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          primarySwatch: Colors.blue,
+          highlightColor: Colors.white.withOpacity(0.2)),
       home: LoginPage(),
     );
   }

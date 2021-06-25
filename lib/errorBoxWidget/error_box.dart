@@ -26,7 +26,7 @@ class ErrorBox extends StatelessWidget {
             ),
             Expanded(
                 child: Text(
-              '$message. Por favor tente novamnete',
+              '$message. Por favor tente novamente',
               style: TextStyle(color: Colors.white, fontSize: 14),
             ))
           ],

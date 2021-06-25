@@ -68,3 +68,33 @@ Future addChairs(String chairId, String chairNickname) async {
     return e;
   }
 }
+
+Future removeChairs(String chairId) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  Chair chair = Chair.toAdd(chairId: chairId, chairNickname: '');
+  var data = chair.addChairToJson();
+
+  try {
+    headers['cookie'] = prefs.getString("cookie");
+
+    var response = await http.post(
+        Uri.https("$URL_PATH_API",
+            "/users/${userManagerStore.user.email}/remove-chair"),
+        headers: headers,
+        body: data);
+
+    var bodyResponse = jsonDecode(utf8.decoder.convert(response.bodyBytes));
+    print(response.statusCode);
+    print(bodyResponse);
+    if (response.statusCode == HttpStatus.ok) {
+      return bodyResponse['data'][0]['chairs']; //response.body;
+    } else if (response.statusCode == HttpStatus.unauthorized) {
+      return Future.error("Por favor faça seu login novamente");
+    } else {
+      return Future.error(bodyResponse['errors'][0]['title']);
+    }
+  } catch (e) {
+    return e;
+  }
+}
