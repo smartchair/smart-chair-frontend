@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:smart_chair_frontend/stores/chair_manager_store.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/current_chair_data_store.dart';
 import 'package:smart_chair_frontend/stores/graph_data_store.dart';
@@ -18,6 +19,7 @@ void setupLocators() {
   GetIt.I.registerSingleton(ChairStore());
   GetIt.I.registerSingleton(GraphStore());
   GetIt.I.registerSingleton(CurrentChairDataStore());
+  GetIt.I.registerSingleton(ChairManagerStore());
 }
 
 class MyApp extends StatelessWidget {

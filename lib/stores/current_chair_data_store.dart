@@ -24,16 +24,11 @@ abstract class _CurrentChairDataStore with Store {
   @action
   Future<void> getCurrentTemp(String chair) async {
     loading = true;
-    print('chair $chair');
-
-    if (chair != null && chair != '') {
-      print('chair inside if $chair');
-      try {
-        temp = await getCurrentTempChair(chair);
-        print('graph store temp $temp');
-      } catch (e) {
-        error = e;
-      }
+    try {
+      temp = await getCurrentTempChair(chair);
+      print('graph store temp $temp');
+    } catch (e) {
+      error = e;
     }
 
     loading = false;
@@ -43,13 +38,11 @@ abstract class _CurrentChairDataStore with Store {
   Future<void> getCurrentLum(String chair) async {
     loading = true;
 
-    if (chair != null && chair != '') {
-      try {
-        lum = await getCurrentLumChair(chair);
-        print('graph store lum $lum');
-      } catch (e) {
-        error = e;
-      }
+    try {
+      lum = await getCurrentLumChair(chair);
+      print('graph store lum $lum');
+    } catch (e) {
+      error = e;
     }
 
     loading = false;

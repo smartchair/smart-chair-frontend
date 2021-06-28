@@ -28,8 +28,6 @@ Future<Map<String, dynamic>> getChairs(String email) async {
     if (response.statusCode == HttpStatus.ok) {
       print(bodyResponse['data'][0]['chairs']);
       return bodyResponse['data'][0]['chairs']; //chair.chairIds;
-    } else if (response.statusCode == HttpStatus.unauthorized) {
-      return Future.error("Por favor faça seu login novamente");
     } else {
       return Future.error(
           "Erro para carregar seus dispositivos"); //"Bad request";

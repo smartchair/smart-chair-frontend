@@ -4,6 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:smart_chair_frontend/stores/chair_manager_store.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/current_chair_data_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
@@ -24,15 +25,28 @@ class _CardSensorState extends State<CardSensor> {
       GetIt.I<CurrentChairDataStore>();
   final ChairStore chairStore = GetIt.I<ChairStore>();
 
+  final ChairManagerStore chairManagerStore = GetIt.I<ChairManagerStore>();
+  ReactionDisposer disposeReaction;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    reaction((_) => chairStore.selectedChair, (newChair) {
+    disposeReaction =
+        reaction((_) => chairManagerStore.selectedChair, (newChair) {
       currentChairDataStore.getCurrentTemp(newChair);
       currentChairDataStore.getCurrentLum(newChair);
     });
+    //dispose();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    disposeReaction();
   }
 
   @override
@@ -42,39 +56,41 @@ class _CardSensorState extends State<CardSensor> {
       children: [
         Container(
           padding: EdgeInsets.only(left: 20),
-          child: Observer(
-            builder: (_) => chairStore.loading
-                ? SizedBox(
-                    height: 30,
-                    width: 85,
-                    child: Shimmer.fromColors(
-                      baseColor: Colors.grey[350],
-                      highlightColor: Colors.white10,
-                      enabled: true,
-                      child: Container(
-                        color: Colors.white,
-                      ),
-                    ),
-                  )
-                : Container(
-                    child: DropdownButton<String>(
-                      value: chairStore.selectedChair == ''
-                          ? 'Selecione'
-                          : chairStore.selectedChair,
-                      onChanged: chairStore.setChangedChair,
-                      items: userManagerStore.user.chairs.keys
-                          .map<DropdownMenuItem<String>>((String key) {
-                        return DropdownMenuItem<String>(
-                          value: key,
-                          child: Text(userManagerStore.user.chairs.values
-                              .firstWhere((element) =>
-                                  userManagerStore.user.chairs[key] ==
-                                  element)),
-                        );
-                      }).toList(),
-                    ),
+          child: Observer(builder: (_) {
+            if (chairStore.loading) {
+              return SizedBox(
+                height: 30,
+                width: 85,
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[350],
+                  highlightColor: Colors.white10,
+                  enabled: true,
+                  child: Container(
+                    color: Colors.white,
                   ),
-          ),
+                ),
+              );
+            } else if (chairManagerStore.selectedChair != null &&
+                chairManagerStore.selectedChair != '') {
+              return Container(
+                child: DropdownButton<String>(
+                  value: chairManagerStore.selectedChair,
+                  onChanged: chairManagerStore.setChangedChair,
+                  items: userManagerStore.user.chairs.keys
+                      .map<DropdownMenuItem<String>>((String key) {
+                    return DropdownMenuItem<String>(
+                      value: key,
+                      child: Text(userManagerStore.user.chairs.values
+                          .firstWhere((element) =>
+                              userManagerStore.user.chairs[key] == element)),
+                    );
+                  }).toList(),
+                ),
+              );
+            } else {
+              return Container();
+            }
+          }),
         ),
         Container(
           height: 150,

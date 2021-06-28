@@ -4,6 +4,7 @@ import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/chair_controller.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/models/user.dart';
+import 'package:smart_chair_frontend/stores/chair_manager_store.dart';
 import 'dart:async';
 
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
@@ -49,9 +50,6 @@ abstract class _ChairStore with Store {
   @observable
   bool edit = false;
 
-  @observable
-  String selectedChair;
-
   @computed
   bool get nameValid => chairNickname != null && chairNickname != '';
   String get nameError {
@@ -75,19 +73,17 @@ abstract class _ChairStore with Store {
   void setChairId(String value) => chairId = value;
 
   @action
-  void setChangedChair(String value) => selectedChair = value;
-
-  @action
   Future<void> getChair() async {
     loading = true;
     error = null;
     try {
       GetIt.I<UserManagerStore>().user.chairs =
           await getChairs(GetIt.I<UserManagerStore>().user.email);
-      selectedChair = GetIt.I<UserManagerStore>().user.chairs.keys.first;
 
-      //setChairs(chairs);
-
+      if (GetIt.I<UserManagerStore>().user.chairs.isNotEmpty) {
+        GetIt.I<ChairManagerStore>().selectedChair =
+            GetIt.I<UserManagerStore>().user.chairs.keys.first;
+      }
     } catch (e) {
       error = e;
     }
@@ -101,14 +97,12 @@ abstract class _ChairStore with Store {
     loading = true;
     error = null;
 
-    //chair.chairNickname = chairNickname;
-    //chair.chairId = chairId;
-
     try {
       var result = await addChairs(chairId, chairNickname);
 
       GetIt.I<UserManagerStore>().user.chairs.addAll(result);
-      //_reset();
+      GetIt.I<ChairManagerStore>().selectedChair =
+          GetIt.I<UserManagerStore>().user.chairs.keys.first;
     } catch (e) {
       error = e;
     }
@@ -116,11 +110,13 @@ abstract class _ChairStore with Store {
     loading = false;
   }
 
+  @action
   Future<void> removeChair() async {
     loading = true;
     try {
       await removeChairs(chairId);
       userManagerStore.user.chairs.removeWhere((key, value) => key == chairId);
+      GetIt.I<ChairManagerStore>().selectedChair = '';
       getChair();
     } catch (e) {
       error = e;
@@ -128,9 +124,9 @@ abstract class _ChairStore with Store {
     loading = false;
   }
 
-  void _reset() {
-    chairId = null;
-    chairNickname = null;
-    edit = false;
-  }
+  // void _reset() {
+  //   chairId = null;
+  //   chairNickname = null;
+  //   edit = false;
+  // }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
+import 'dart:async';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
@@ -25,8 +25,10 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
     super.initState();
 
+    // Future.delayed(Duration(milliseconds: 100), chairStore.getChair);
+
     when((_) => userManagerStore.user.chairs.keys.isEmpty, () {
-      chairStore.getChair();
+      Future.delayed(Duration(milliseconds: 100), chairStore.getChair);
     });
   }
 

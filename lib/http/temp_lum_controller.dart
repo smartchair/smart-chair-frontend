@@ -13,6 +13,10 @@ Future getCurrentTempChair(String chairId) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   headers['cookie'] = prefs.getString("cookie");
 
+  if (chairId == "" || chairId == null) {
+    return Future.error('Sem dispositivos');
+  }
+
   try {
     var response = await http.get(
         Uri.https(
@@ -25,8 +29,6 @@ Future getCurrentTempChair(String chairId) async {
     if (response.statusCode == HttpStatus.ok) {
       print(bodyResponse['data'][0]['currentTemp']);
       return bodyResponse['data'][0]['currentTemp']; //chair.chairIds;
-    } else if (response.statusCode == HttpStatus.unauthorized) {
-      return Future.error("Por favor faça seu login novamente");
     } else {
       return Future.error(
           "Erro para carregar dados da temperatura"); //"Bad request";
@@ -40,6 +42,10 @@ Future getCurrentLumChair(String chairId) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   headers['cookie'] = prefs.getString("cookie");
 
+  if (chairId == "" || chairId == null) {
+    return Future.error('Sem dispositivos');
+  }
+
   try {
     var response = await http.get(
         Uri.https(
@@ -52,8 +58,6 @@ Future getCurrentLumChair(String chairId) async {
     if (response.statusCode == HttpStatus.ok) {
       print(bodyResponse['data'][0]['currentLum']);
       return bodyResponse['data'][0]['currentLum']; //chair.chairIds;
-    } else if (response.statusCode == HttpStatus.unauthorized) {
-      return Future.error("Por favor faça seu login novamente");
     } else {
       return Future.error(
           "Erro para carregar dados da luminosidade"); //"Bad request";

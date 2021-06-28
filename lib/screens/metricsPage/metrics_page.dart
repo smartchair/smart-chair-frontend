@@ -18,7 +18,9 @@ class BarChartTempState extends State<BarChartTemp> {
     // TODO: implement initState
     super.initState();
 
-    autorun((_) => graphStore.getCurrentTemp());
+    final dispose = autorun((_) => graphStore.getCurrentTemp());
+
+    dispose();
   }
 
   @override
