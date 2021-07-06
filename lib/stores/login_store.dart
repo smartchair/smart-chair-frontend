@@ -1,7 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/user_controller.dart';
-import 'package:smart_chair_frontend/models/user.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'dart:async';
 
@@ -23,19 +22,24 @@ abstract class _LoginStore with Store {
   String error;
 
   @action
-  void setEmail(String value) => email = value;
+  void setEmail(String value) => email = value.toLowerCase();
 
   @action
   void setPass(String value) => password = value;
 
   @computed
   bool get emailValid =>
-      email != null && email != ''; //&& email.isEmailValid();
+      email != null &&
+      email != '' &&
+      RegExp(r"^[a-zA-Z0-9.?#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9]{0,253}[a-zA-Z0-9])?)*$")
+          .hasMatch(email);
   String get emailError {
     if (email == null || emailValid) {
       return null;
-    } else {
+    } else if (email.isEmpty) {
       return 'E-mail obrigatório';
+    } else {
+      return "E-mail inválido";
     }
   }
 
@@ -61,11 +65,7 @@ abstract class _LoginStore with Store {
     error = null;
 
     try {
-      User user = new User();
-      user.email = email;
-      user.password = password;
-
-      final result = await login(user);
+      final result = await login(email, password);
       GetIt.I<UserManagerStore>().setUser(result);
     } catch (e) {
       error = e;

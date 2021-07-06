@@ -98,11 +98,41 @@ mixin _$ChairStore on _ChairStore, Store {
     });
   }
 
+  final _$btnClickedAtom = Atom(name: '_ChairStore.btnClicked');
+
+  @override
+  bool get btnClicked {
+    _$btnClickedAtom.reportRead();
+    return super.btnClicked;
+  }
+
+  @override
+  set btnClicked(bool value) {
+    _$btnClickedAtom.reportWrite(value, super.btnClicked, () {
+      super.btnClicked = value;
+    });
+  }
+
+  final _$selectedChairAtom = Atom(name: '_ChairStore.selectedChair');
+
+  @override
+  String get selectedChair {
+    _$selectedChairAtom.reportRead();
+    return super.selectedChair;
+  }
+
+  @override
+  set selectedChair(String value) {
+    _$selectedChairAtom.reportWrite(value, super.selectedChair, () {
+      super.selectedChair = value;
+    });
+  }
+
   final _$getChairAsyncAction = AsyncAction('_ChairStore.getChair');
 
   @override
-  Future<void> getChair(String email) {
-    return _$getChairAsyncAction.run(() => super.getChair(email));
+  Future<void> getChair() {
+    return _$getChairAsyncAction.run(() => super.getChair());
   }
 
   final _$addChairAsyncAction = AsyncAction('_ChairStore.addChair');
@@ -112,7 +142,25 @@ mixin _$ChairStore on _ChairStore, Store {
     return _$addChairAsyncAction.run(() => super.addChair());
   }
 
+  final _$removeChairAsyncAction = AsyncAction('_ChairStore.removeChair');
+
+  @override
+  Future<void> removeChair() {
+    return _$removeChairAsyncAction.run(() => super.removeChair());
+  }
+
   final _$_ChairStoreActionController = ActionController(name: '_ChairStore');
+
+  @override
+  void setError(String value) {
+    final _$actionInfo =
+        _$_ChairStoreActionController.startAction(name: '_ChairStore.setError');
+    try {
+      return super.setError(value);
+    } finally {
+      _$_ChairStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setChairNickname(String value) {
@@ -126,6 +174,39 @@ mixin _$ChairStore on _ChairStore, Store {
   }
 
   @override
+  void setChairId(String value) {
+    final _$actionInfo = _$_ChairStoreActionController.startAction(
+        name: '_ChairStore.setChairId');
+    try {
+      return super.setChairId(value);
+    } finally {
+      _$_ChairStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setChangedChair(String value) {
+    final _$actionInfo = _$_ChairStoreActionController.startAction(
+        name: '_ChairStore.setChangedChair');
+    try {
+      return super.setChangedChair(value);
+    } finally {
+      _$_ChairStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void resetChair(String value) {
+    final _$actionInfo = _$_ChairStoreActionController.startAction(
+        name: '_ChairStore.resetChair');
+    try {
+      return super.resetChair(value);
+    } finally {
+      _$_ChairStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 result: ${result},
@@ -133,6 +214,8 @@ error: ${error},
 loading: ${loading},
 chairNickname: ${chairNickname},
 chairId: ${chairId},
+btnClicked: ${btnClicked},
+selectedChair: ${selectedChair},
 nameValid: ${nameValid},
 deviceNamePressed: ${deviceNamePressed}
     ''';

@@ -6,12 +6,7 @@ import 'package:smart_chair_frontend/screens/homePage/widgets/card_sensors.dart'
 import 'package:smart_chair_frontend/screens/homePage/widgets/card_suggestions.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +26,6 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.only(bottom: 30),
                 child: BottomButton(
                     false, primaryColor, customColor, "Meus dispositivos", () {
-                  print("dispositivos");
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => DevicePage()));
                 }),

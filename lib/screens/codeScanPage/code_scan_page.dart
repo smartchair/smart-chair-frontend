@@ -6,58 +6,45 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
-import 'package:smart_chair_frontend/http/chair_controller.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
-import 'package:smart_chair_frontend/models/user.dart';
 import 'package:smart_chair_frontend/screens/chairNamePage/chair_name_page.dart';
 import 'package:smart_chair_frontend/screens/devicesPage/device_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
-import 'package:smart_chair_frontend/utils/const.dart';
-import 'package:smart_chair_frontend/utils/util_button.dart';
 import 'package:smart_chair_frontend/utils/util_screen.dart';
 import 'dart:async';
 
 class ScanScreen extends StatefulWidget {
-  ChairStore chairStore = GetIt.I<ChairStore>();
-
-  UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
-  // final String name;
-  // final String email;
-  // final String pass;
-  //
-  // ScanScreen({
-  //   Key key,
-  //   this.name,
-  //   this.email,
-  //   this.pass,
-  // }) : super(key: key);
-
   @override
-  _ScanState createState() =>
-      new _ScanState(/*this.name, this.email, this.pass*/);
+  _ScanState createState() => new _ScanState();
 }
 
-class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
-  final ChairStore chairStore = GetIt.I<ChairStore>();
+class _ScanState extends State<ScanScreen> with ScreenUtil {
+  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+  final ChairStore chairStore = ChairStore();
   String _scanBarcode = "";
-  //final String name;
-  //final String email;
-  //final String pass;
-
-  //_ScanState(this.name, this.email, this.pass);
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    when((_) => chairStore.chairId != null, () {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    when((_) => chairStore.chairId != '', () {
+      if (userManagerStore.user.chairs.containsKey(chairStore.chairId)) {
+        _showAlertDialog(context, "Cadeira já cadastrada");
+      } else {
+        Chair chair = Chair();
+        chair.chairId = chairStore.chairId;
         Navigator.push(
-            context, MaterialPageRoute(builder: (_) => ChairNamePage()));
-      });
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChairNamePage(
+              chair: chair,
+            ),
+          ),
+        );
+      }
     });
   }
 
@@ -131,9 +118,6 @@ class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
                         BottomButton(false, primaryColor, customColor,
                             "Adicionar dispositivo", () {
                           scanQR(context);
-
-                          // userManagerStore.user.chairs = jsonDecode(_scanBarcode);
-                          // addChairs( userManagerStore.user.chairs);
                         })
                       ],
                     ),
@@ -150,16 +134,12 @@ class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
-      print(barcodeScanRes);
+      print('barcodeScanRes $barcodeScanRes');
 
-      chairStore.chairId = jsonDecode(barcodeScanRes)['chairId'];
-      print('chair stpre chairId ${chairStore.chairId}');
-
-      // Navigator.push(
-      //     context, MaterialPageRoute(builder: (_) => ChairNamePage()));
-
-      //_showAlertDialog(context);
-      //chairStore.addChair(jsonDecode(barcodeScanRes));
+      if (barcodeScanRes != '-1') {
+        chairStore.chairId = jsonDecode(barcodeScanRes)['chairId'];
+        print('chair store chairId ${chairStore.chairId}');
+      }
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
@@ -169,5 +149,37 @@ class _ScanState extends State<ScanScreen> with ScreenUtil, RoundedButtonUtil {
     setState(() {
       _scanBarcode = barcodeScanRes;
     });
+  }
+
+  void _showAlertDialog(BuildContext context, String msg) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(msg),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              // Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DevicePage(),
+                ),
+              );
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }

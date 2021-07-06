@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
-import 'package:smart_chair_frontend/stores/login_store.dart';
+import 'package:smart_chair_frontend/stores/current_chair_data_store.dart';
+import 'package:smart_chair_frontend/stores/graph_data_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'screens/loginPage/login_page.dart';
 
@@ -13,8 +14,9 @@ void main() {
 
 void setupLocators() {
   GetIt.I.registerSingleton(UserManagerStore());
-  GetIt.I.registerSingleton(LoginStore());
   GetIt.I.registerSingleton(ChairStore());
+  GetIt.I.registerSingleton(GraphStore());
+  GetIt.I.registerSingleton(CurrentChairDataStore());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,8 +26,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'POC APP FLUTTER',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          primarySwatch: Colors.blue,
+          highlightColor: Colors.white.withOpacity(0.2)),
       home: LoginPage(),
     );
   }

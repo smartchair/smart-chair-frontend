@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/chair_controller.dart';
+import 'package:smart_chair_frontend/http/teste_mock_post_chair_info_controller.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
-import 'package:smart_chair_frontend/models/user.dart';
 import 'dart:async';
 
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
@@ -13,6 +12,17 @@ part 'chair_store.g.dart';
 class ChairStore = _ChairStore with _$ChairStore;
 
 abstract class _ChairStore with Store {
+  _ChairStore({this.chair}) {
+    if (chair == null) {
+      chair = Chair();
+    }
+
+    chairNickname = chair.chairNickname ?? '';
+    chairId = chair.chairId ?? '';
+  }
+
+  Chair chair;
+
   @observable
   String result;
 
@@ -23,7 +33,7 @@ abstract class _ChairStore with Store {
   bool loading = false;
 
   @observable
-  String chairNickname;
+  String chairNickname = '';
 
   @observable
   String chairId;
@@ -31,22 +41,13 @@ abstract class _ChairStore with Store {
   @observable
   bool btnClicked = false;
 
-  @action
-  void setChairNickname(String value) => chairNickname = value;
-
-  // ObservableMap mapChairs = ObservableMap();
-  //
-  // @action
-  // void setChairs(Map<String, dynamic> chairs) {
-  //   mapChairs.clear();
-  //   mapChairs.addAll(chairs);
-  //   loading = false;
-  // }
+  @observable
+  String selectedChair = '';
 
   @computed
   bool get nameValid => chairNickname != null && chairNickname != '';
   String get nameError {
-    if (chairNickname == null || nameValid) {
+    if (chairNickname.isNotEmpty || nameValid) {
       return null;
     } else {
       return 'Nome obrigatório';
@@ -57,15 +58,32 @@ abstract class _ChairStore with Store {
   Function get deviceNamePressed => nameValid && !loading ? addChair : null;
 
   @action
-  Future<void> getChair(String email) async {
+  void setError(String value) => error = value;
+
+  @action
+  void setChairNickname(String value) => chairNickname = value;
+
+  @action
+  void setChairId(String value) => chairId = value;
+
+  @action
+  void setChangedChair(String value) => selectedChair = value;
+
+  @action
+  Future<void> getChair() async {
     loading = true;
+    error = null;
     try {
-      User user = User();
-      user.email = email;
-      GetIt.I<UserManagerStore>().user.chairs = await getChairs(user);
+      GetIt.I<UserManagerStore>().user.chairs =
+          await getChairs(GetIt.I<UserManagerStore>().user.email);
 
-      //setChairs(chairs);
+      print('user manager chair ${userManagerStore.user.chairs}');
 
+      if (GetIt.I<UserManagerStore>().user.chairs.isNotEmpty) {
+        selectedChair = GetIt.I<UserManagerStore>().user.chairs.keys.first;
+      } else {
+        selectedChair = '';
+      }
     } catch (e) {
       error = e;
     }
@@ -79,19 +97,42 @@ abstract class _ChairStore with Store {
     loading = true;
     error = null;
 
-    if (chairNickname != null) {
-      var data = {"chairId": "$chairId", "chairNickname": "$chairNickname"};
-      print('store data $data');
-      try {
-        var result = await addChairs(data);
-        GetIt.I<UserManagerStore>().user.chairs.addAll(result);
-        chairId = null;
-        chairNickname = null;
-      } catch (e) {
-        error = e;
-      }
+    try {
+      var result = await addChairs(chairId, chairNickname);
+
+      GetIt.I<UserManagerStore>().user.chairs.addAll(result);
+      selectedChair = GetIt.I<UserManagerStore>().user.chairs.keys.first;
+      await addMockNewChair(chairId);
+    } catch (e) {
+      error = e;
     }
 
     loading = false;
+  }
+
+  @action
+  Future<void> removeChair() async {
+    loading = true;
+    try {
+      await removeChairs(chairId);
+      GetIt.I<UserManagerStore>()
+          .user
+          .chairs
+          .removeWhere((key, value) => key == chairId);
+      selectedChair = '';
+      getChair();
+    } catch (e) {
+      error = e;
+    }
+    loading = false;
+  }
+
+  @action
+  void resetChair(String value) {
+    setChairId(value);
+    setChairId(value);
+    setChairNickname(value);
+    setError(value);
+    setChangedChair(value);
   }
 }

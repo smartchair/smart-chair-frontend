@@ -47,12 +47,17 @@ abstract class _CreateAccountStore with Store {
 
   @computed
   bool get emailValid =>
-      email != null && email != ''; //&& email.isEmailValid();
+      email != null &&
+      email != '' &&
+      RegExp(r"^[a-zA-Z0-9.?#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9]{0,253}[a-zA-Z0-9])?)*$")
+          .hasMatch(email);
   String get emailError {
     if (email == null || emailValid) {
       return null;
-    } else {
+    } else if (email.isEmpty) {
       return 'E-mail obrigatório';
+    } else {
+      return "E-mail inválido";
     }
   }
 
@@ -96,12 +101,7 @@ abstract class _CreateAccountStore with Store {
     error = null;
 
     try {
-      User user = new User();
-      user.email = email;
-      user.password = password;
-      user.chairs = {};
-
-      result = await createUser(user);
+      result = await createUser(email, password, {});
     } catch (e) {
       error = e;
     }

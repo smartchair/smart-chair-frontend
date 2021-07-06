@@ -7,26 +7,24 @@ import 'package:smart_chair_frontend/models/user.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 import 'package:smart_chair_frontend/utils/cookies.dart';
 
-Future<String> createUser(User user) async {
-  String json =
-      '{"email": "${user.email}", "password" : "${user.password}", "chairs" : ${user.chairs} }';
-  print(json);
+Future<String> createUser(
+    String email, String password, Map<String, dynamic> chairs) async {
+  User user = User.toCreate(email: email, password: password, chairs: chairs);
+  var data = user.createToJson();
 
   try {
-    var response =
-        await http.post(Uri.https("$URL_PATH_API", "/users/create_user"),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: json);
+    var response = await http.post(
+        Uri.https("$URL_PATH_API", "/users/create_user"),
+        headers: <String, String>{},
+        body: data);
 
     print(response.statusCode);
-    var bodyResponse = jsonDecode(response.body);
+    var bodyResponse = jsonDecode(utf8.decoder.convert(response.bodyBytes));
+
     if (response.statusCode == HttpStatus.created) {
       print(jsonDecode(response.body));
       return "Usuário criado com sucesso";
     } else {
-      print(jsonDecode(response.body));
       return Future.error(bodyResponse['errors'][0]['title']);
     }
   } catch (e) {
@@ -34,22 +32,20 @@ Future<String> createUser(User user) async {
   }
 }
 
-Future<User> login(User user) async {
+Future<User> login(String email, String password) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  String json =
-      '{"username": "${user.email}", "password" : "${user.password}"}';
-  print(json);
+  print("email $email , pass $password");
+
+  User user = User.toLogIn(email: email, password: password);
+  var data = user.loginToJson();
 
   try {
     var response = await http.post(Uri.https("$URL_PATH_API", "/users/login"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: json);
+        headers: <String, String>{}, body: data);
 
     print(response.statusCode);
-    var bodyResponse = jsonDecode(response.body);
+    var bodyResponse = jsonDecode(utf8.decoder.convert(response.bodyBytes));
     if (response.statusCode == HttpStatus.ok) {
       updateCookie(response, prefs);
 
