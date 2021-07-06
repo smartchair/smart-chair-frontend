@@ -23,7 +23,6 @@ class ScanScreen extends StatefulWidget {
 class _ScanState extends State<ScanScreen> with ScreenUtil {
   final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
   final ChairStore chairStore = ChairStore();
-  final ChairStore chairStoreGlobal = GetIt.I<ChairStore>();
   String _scanBarcode = "";
 
   @override
@@ -33,20 +32,18 @@ class _ScanState extends State<ScanScreen> with ScreenUtil {
 
     when((_) => chairStore.chairId != '', () {
       if (userManagerStore.user.chairs.containsKey(chairStore.chairId)) {
-        chairStoreGlobal.setError("Cadeira já cadastrada");
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => DevicePage()));
-        //chairStore.chairId = null;
+        _showAlertDialog(context, "Cadeira já cadastrada");
       } else {
-        //chairStore.setError(null);
         Chair chair = Chair();
         chair.chairId = chairStore.chairId;
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => ChairNamePage(
-                      chair: chair,
-                    )));
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChairNamePage(
+              chair: chair,
+            ),
+          ),
+        );
       }
     });
   }
@@ -121,9 +118,6 @@ class _ScanState extends State<ScanScreen> with ScreenUtil {
                         BottomButton(false, primaryColor, customColor,
                             "Adicionar dispositivo", () {
                           scanQR(context);
-
-                          // userManagerStore.user.chairs = jsonDecode(_scanBarcode);
-                          // addChairs( userManagerStore.user.chairs);
                         })
                       ],
                     ),
@@ -140,16 +134,12 @@ class _ScanState extends State<ScanScreen> with ScreenUtil {
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
-      print(barcodeScanRes);
+      print('barcodeScanRes $barcodeScanRes');
 
-      chairStore.chairId = jsonDecode(barcodeScanRes)['chairId'];
-      print('chair store chairId ${chairStore.chairId}');
-
-      // Navigator.push(
-      //     context, MaterialPageRoute(builder: (_) => ChairNamePage()));
-
-      //_showAlertDialog(context);
-      //chairStore.addChair(jsonDecode(barcodeScanRes));
+      if (barcodeScanRes != '-1') {
+        chairStore.chairId = jsonDecode(barcodeScanRes)['chairId'];
+        print('chair store chairId ${chairStore.chairId}');
+      }
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
@@ -159,5 +149,37 @@ class _ScanState extends State<ScanScreen> with ScreenUtil {
     setState(() {
       _scanBarcode = barcodeScanRes;
     });
+  }
+
+  void _showAlertDialog(BuildContext context, String msg) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(msg),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              // Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DevicePage(),
+                ),
+              );
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }

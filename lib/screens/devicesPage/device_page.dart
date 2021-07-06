@@ -2,20 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
 import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
 import 'dart:async';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/screens/chairNamePage/chair_name_page.dart';
 import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
-import 'package:smart_chair_frontend/screens/loginPage/login_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 class DevicePage extends StatefulWidget {
-  DevicePage({Key key}) : super(key: key);
-
   @override
   _DevicePageState createState() => _DevicePageState();
 }
@@ -23,6 +19,7 @@ class DevicePage extends StatefulWidget {
 class _DevicePageState extends State<DevicePage> {
   final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
   final ChairStore chairStore = GetIt.I<ChairStore>();
+  // final ChairStore chairStore = ChairStore();
 
   @override
   void initState() {
@@ -31,15 +28,6 @@ class _DevicePageState extends State<DevicePage> {
 
     when((_) => userManagerStore.user.chairs.isEmpty, () {
       Future.delayed(Duration(milliseconds: 200), chairStore.getChair);
-    });
-
-    // autorun((_) {
-    //   Future.delayed(Duration(milliseconds: 200), chairStore.getChair);
-    // });
-
-    when((_) => chairStore.error != null, () {
-      _showAlertDialog(context, chairStore.error);
-      chairStore.setError(null);
     });
   }
 
@@ -71,31 +59,27 @@ class _DevicePageState extends State<DevicePage> {
       body: Observer(builder: (_) {
         if (chairStore.loading) {
           return Center(child: CircularProgressIndicator());
+        } else if (userManagerStore.user == null) {
+          return Container();
         } else if (!chairStore.loading &&
-            userManagerStore.user.chairs.length == 0) {
+            userManagerStore.user.chairs.length == 0 &&
+            userManagerStore.isLoggedIn) {
           return Center(
-            child: Container(
-              child: Text(
-                "Nenhum dispositivo cadastrado",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-            ),
-          );
-        } else if (chairStore.error == "Por favor faça seu login novamente") {
-          return Center(
-            child: Container(
-              child: Column(
-                children: [
-                  Text(chairStore.error),
-                  SizedBox(
-                    height: 12,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  child: Text(
+                    "Nenhum dispositivo cadastrado",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
-                  BottomButton(false, primaryColor, customColor, "Login", () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (_) => LoginPage()));
-                  })
-                ],
-              ),
+                ),
+                IconButton(
+                  onPressed: chairStore.getChair,
+                  icon: Icon(Icons.refresh),
+                  iconSize: 30,
+                )
+              ],
             ),
           );
         } else {
@@ -182,32 +166,6 @@ class _DevicePageState extends State<DevicePage> {
     );
   }
 
-  void _showAlertDialog(BuildContext context, String msg) {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        content: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Text(msg),
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showConfirmDialog(
       BuildContext context, String chairName, String listIdsChairs) {
     showDialog<String>(
@@ -240,11 +198,13 @@ class _DevicePageState extends State<DevicePage> {
               chair.chairNickname = chairName;
               Navigator.pop(context);
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => ChairNamePage(
-                            chair: chair,
-                          )));
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChairNamePage(
+                    chair: chair,
+                  ),
+                ),
+              );
             },
             child: const Text('Sim'),
           ),

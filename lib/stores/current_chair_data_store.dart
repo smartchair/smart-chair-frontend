@@ -47,4 +47,10 @@ abstract class _CurrentChairDataStore with Store {
 
     loading = false;
   }
+
+  @action
+  void resetChairData(double value) {
+    temp = value;
+    lum = value;
+  }
 }

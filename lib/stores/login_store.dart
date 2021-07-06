@@ -1,7 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/user_controller.dart';
-import 'package:smart_chair_frontend/models/user.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'dart:async';
 
@@ -23,7 +22,7 @@ abstract class _LoginStore with Store {
   String error;
 
   @action
-  void setEmail(String value) => email = value;
+  void setEmail(String value) => email = value.toLowerCase();
 
   @action
   void setPass(String value) => password = value;

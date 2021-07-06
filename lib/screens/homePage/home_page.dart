@@ -1,37 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
 import 'package:smart_chair_frontend/screens/devicesPage/device_page.dart';
 import 'package:smart_chair_frontend/screens/homePage/widgets/card_gamification.dart';
 import 'package:smart_chair_frontend/screens/homePage/widgets/card_sensors.dart';
 import 'package:smart_chair_frontend/screens/homePage/widgets/card_suggestions.dart';
-import 'package:smart_chair_frontend/stores/chair_store.dart';
-import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
-  final ChairStore chairStore = GetIt.I<ChairStore>();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    // Future.delayed(Duration(milliseconds: 100), chairStore.getChair);
-
-    when((_) => userManagerStore.user.chairs.keys.isEmpty, () {
-      Future.delayed(Duration(milliseconds: 100), chairStore.getChair);
-    });
-  }
-
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

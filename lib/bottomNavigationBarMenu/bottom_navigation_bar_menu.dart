@@ -40,8 +40,8 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
     // TODO: implement initState
     super.initState();
     when((_) => userManagerStore.user == null, () {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginPage()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
     });
   }
 
@@ -63,7 +63,7 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
             padding: const EdgeInsets.only(right: 10),
             child: IconButton(
               onPressed: () {
-                _showAlertDialog(context, 'VIRUS DETECTADO');
+                _showAlertDialog(context, 'TESTE');
               },
               icon: Icon(
                 Icons.account_circle_rounded,

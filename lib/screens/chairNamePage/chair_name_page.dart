@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
@@ -23,7 +22,6 @@ class _ChairNamePageState extends State<ChairNamePage> {
         chairStore = ChairStore(chair: chair ?? Chair());
 
   final ChairStore chairStore;
-  // final ChairStore chairStore = GetIt.I<ChairStore>();
 
   bool edit;
 
