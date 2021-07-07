@@ -10,16 +10,16 @@ import 'package:smart_chair_frontend/utils/const.dart';
 class ChairNamePage extends StatefulWidget {
   ChairNamePage({this.chair});
 
-  final Chair chair;
+  final Chair? chair;
 
   @override
-  _ChairNamePageState createState() => _ChairNamePageState(chair);
+  _ChairNamePageState createState() => _ChairNamePageState(chair!);
 }
 
 class _ChairNamePageState extends State<ChairNamePage> {
   _ChairNamePageState(Chair chair)
       : edit = chair.chairNickname != null,
-        chairStore = ChairStore(chair: chair ?? Chair());
+        chairStore = ChairStore(chair: chair);
 
   final ChairStore chairStore;
 
@@ -78,8 +78,12 @@ class _ChairNamePageState extends State<ChairNamePage> {
               Observer(
                 builder: (_) => Container(
                   padding: EdgeInsets.symmetric(horizontal: 60),
-                  child: BottomButton(chairStore.loading, primaryColor,
-                      customColor, "Salvar", chairStore.deviceNamePressed),
+                  child: BottomButton(
+                      chairStore.loading,
+                      primaryColor,
+                      customColor,
+                      "Salvar",
+                      chairStore.deviceNamePressed as void Function()?),
                 ),
               )
             ],

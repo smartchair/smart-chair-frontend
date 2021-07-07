@@ -17,8 +17,8 @@ class DevicePage extends StatefulWidget {
 }
 
 class _DevicePageState extends State<DevicePage> {
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
-  final ChairStore chairStore = GetIt.I<ChairStore>();
+  final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
+  final ChairStore? chairStore = GetIt.I<ChairStore>();
   // final ChairStore chairStore = ChairStore();
 
   @override
@@ -26,8 +26,8 @@ class _DevicePageState extends State<DevicePage> {
     // TODO: implement initState
     super.initState();
 
-    when((_) => userManagerStore.user.chairs.isEmpty, () {
-      Future.delayed(Duration(milliseconds: 200), chairStore.getChair);
+    when((_) => userManagerStore!.user!.chairs!.isEmpty, () {
+      Future.delayed(Duration(milliseconds: 200), chairStore!.getChair);
     });
   }
 
@@ -57,13 +57,13 @@ class _DevicePageState extends State<DevicePage> {
         ],
       ),
       body: Observer(builder: (_) {
-        if (chairStore.loading) {
+        if (chairStore!.loading) {
           return Center(child: CircularProgressIndicator());
-        } else if (userManagerStore.user == null) {
+        } else if (userManagerStore!.user == null) {
           return Container();
-        } else if (!chairStore.loading &&
-            userManagerStore.user.chairs.length == 0 &&
-            userManagerStore.isLoggedIn) {
+        } else if (!chairStore!.loading &&
+            userManagerStore!.user!.chairs!.length == 0 &&
+            userManagerStore!.isLoggedIn) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -75,7 +75,7 @@ class _DevicePageState extends State<DevicePage> {
                   ),
                 ),
                 IconButton(
-                  onPressed: chairStore.getChair,
+                  onPressed: chairStore!.getChair,
                   icon: Icon(Icons.refresh),
                   iconSize: 30,
                 )
@@ -84,17 +84,17 @@ class _DevicePageState extends State<DevicePage> {
           );
         } else {
           return RefreshIndicator(
-            onRefresh: () => chairStore.getChair(),
+            onRefresh: () => chairStore!.getChair(),
             child: ListView.separated(
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(
                 thickness: 2,
               ),
-              itemCount: userManagerStore.user.chairs.length,
+              itemCount: userManagerStore!.user!.chairs!.length,
               itemBuilder: (context, index) {
                 var listNameChairs =
-                    userManagerStore.user.chairs.values.toList();
-                var listIdsChairs = userManagerStore.user.chairs.keys.toList();
+                    userManagerStore!.user!.chairs!.values.toList();
+                var listIdsChairs = userManagerStore!.user!.chairs!.keys.toList();
                 return Container(
                   padding: EdgeInsets.all(8),
                   child: Dismissible(
@@ -145,8 +145,8 @@ class _DevicePageState extends State<DevicePage> {
                       );
                     },
                     onDismissed: (direction) {
-                      chairStore.setChairId(listIdsChairs[index]);
-                      chairStore.removeChair();
+                      chairStore!.setChairId(listIdsChairs[index]);
+                      chairStore!.removeChair();
                     },
                     child: ListTile(
                       title: Text(listNameChairs[index]),

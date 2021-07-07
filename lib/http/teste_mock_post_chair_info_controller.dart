@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:smart_chair_frontend/utils/const.dart';
 
-Future<void> addMockNewChair(String chairId) async {
+Future<void> addMockNewChair(String? chairId) async {
   var temp = new Random().nextInt(40);
   var noise = new Random().nextInt(40);
   var lum = new Random().nextInt(40);
@@ -30,6 +30,6 @@ Future<void> addMockNewChair(String chairId) async {
       print('response ok');
     }
   } catch (e) {
-    return e;
+    print(e);
   }
 }

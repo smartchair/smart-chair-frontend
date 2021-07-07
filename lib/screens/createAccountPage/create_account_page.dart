@@ -116,7 +116,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
                             primaryColor,
                             customColor,
                             "Criar Conta",
-                            _createAccountStore.createAccountPressed),
+                            _createAccountStore.createAccountPressed as void Function()?),
                       ),
                       Container(
                         child: GestureDetector(
@@ -147,7 +147,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
     );
   }
 
-  void _showAlertDialog(BuildContext context, String msg) {
+  void _showAlertDialog(BuildContext context, String? msg) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -157,7 +157,7 @@ class CreateAccountPageState extends State<CreateAccountPage>
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 20),
-              child: Text(msg),
+              child: Text(msg!),
             ),
           ],
         ),

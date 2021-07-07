@@ -18,7 +18,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final LoginStore loginStore = LoginStore();
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+  final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     // TODO: implement initState
     super.initState();
 
-    when((_) => userManagerStore.user != null, () {
+    when((_) => userManagerStore!.user != null, () {
       Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => BottomNavigationBarMenu()));
     });
@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50,
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: BottomButton(loginStore.loading, primaryColor,
-                    customColor, "Entrar", loginStore.logInPressed),
+                    customColor, "Entrar", loginStore.logInPressed as void Function()?),
               ),
             ),
             Container(

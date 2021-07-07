@@ -21,7 +21,7 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanState extends State<ScanScreen> with ScreenUtil {
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+  final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
   final ChairStore chairStore = ChairStore();
   String _scanBarcode = "";
 
@@ -31,7 +31,7 @@ class _ScanState extends State<ScanScreen> with ScreenUtil {
     super.initState();
 
     when((_) => chairStore.chairId != '', () {
-      if (userManagerStore.user.chairs.containsKey(chairStore.chairId)) {
+      if (userManagerStore!.user!.chairs!.containsKey(chairStore.chairId)) {
         _showAlertDialog(context, "Cadeira já cadastrada");
       } else {
         Chair chair = Chair();

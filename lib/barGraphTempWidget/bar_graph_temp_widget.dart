@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class BarGraphTemp extends StatelessWidget {
-  final double temp;
+  final double? temp;
 
   BarGraphTemp(this.temp);
 
@@ -80,7 +80,7 @@ class BarGraphTemp extends StatelessWidget {
                 x: 0,
                 barRods: [
                   BarChartRodData(
-                      y: temp == null ? 0 : temp,
+                      y: temp!,
                       colors: [Colors.lightBlueAccent, Colors.greenAccent])
                 ],
                 showingTooltipIndicators: [0],

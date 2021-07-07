@@ -13,43 +13,43 @@ abstract class _CurrentChairDataStore with Store {
   bool loading = false;
 
   @observable
-  double temp;
+  double? temp;
 
   @observable
-  double lum;
+  double? lum;
 
   @observable
-  String error;
+  String? error;
 
   @action
-  Future<void> getCurrentTemp(String chair) async {
+  Future<void> getCurrentTemp(String? chair) async {
     loading = true;
     try {
       temp = await getCurrentTempChair(chair);
       print('graph store temp $temp');
     } catch (e) {
-      error = e;
+      //error = e as String?;
     }
 
     loading = false;
   }
 
   @action
-  Future<void> getCurrentLum(String chair) async {
+  Future<void> getCurrentLum(String? chair) async {
     loading = true;
 
     try {
       lum = await getCurrentLumChair(chair);
       print('graph store lum $lum');
     } catch (e) {
-      error = e;
+      //error = e as String?;
     }
 
     loading = false;
   }
 
   @action
-  void resetChairData(double value) {
+  void resetChairData(double? value) {
     temp = value;
     lum = value;
   }

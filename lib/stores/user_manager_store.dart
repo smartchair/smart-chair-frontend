@@ -13,10 +13,10 @@ class UserManagerStore = _UserManagerStore with _$UserManagerStore;
 
 abstract class _UserManagerStore with Store {
   @observable
-  User user;
+  User? user;
 
   @action
-  void setUser(User value) => user = value;
+  void setUser(User? value) => user = value;
 
   @computed
   bool get isLoggedIn => user != null;

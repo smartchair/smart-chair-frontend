@@ -9,9 +9,9 @@ import 'package:smart_chair_frontend/utils/const.dart';
 
 Map<String, String> headers = {};
 
-Future getCurrentTempChair(String chairId) async {
+Future getCurrentTempChair(String? chairId) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  headers['cookie'] = prefs.getString("cookie");
+  headers['cookie'] = prefs.getString("cookie")!;
 
   if (chairId == "" || chairId == null) {
     return Future.error('Sem dispositivos');
@@ -38,9 +38,9 @@ Future getCurrentTempChair(String chairId) async {
   }
 }
 
-Future getCurrentLumChair(String chairId) async {
+Future getCurrentLumChair(String? chairId) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  headers['cookie'] = prefs.getString("cookie");
+  headers['cookie'] = prefs.getString("cookie")!;
 
   if (chairId == "" || chairId == null) {
     return Future.error('Sem dispositivos');

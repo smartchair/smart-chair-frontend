@@ -17,7 +17,7 @@ class BottomNavigationBarMenu extends StatefulWidget {
 class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
   int _selectedIndex = 0;
 
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+  final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -39,7 +39,7 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    when((_) => userManagerStore.user == null, () {
+    when((_) => userManagerStore!.user == null, () {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginPage()));
     });

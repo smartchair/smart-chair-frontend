@@ -11,7 +11,7 @@ Map<String, String> headers = {};
 
 Future getCurrentTempChair(String chairId) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  headers['cookie'] = prefs.getString("cookie");
+  headers['cookie'] = prefs.getString("cookie")!;
 
   try {
     var response = await http.get(

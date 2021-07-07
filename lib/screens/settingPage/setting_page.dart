@@ -4,9 +4,9 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 
 class SettingPage extends StatelessWidget {
-  SettingPage({Key key}) : super(key: key);
+  SettingPage({Key? key}) : super(key: key);
 
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+  final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class SettingPage extends StatelessWidget {
                 title: 'Sair',
                 leading: Icon(Icons.logout),
                 onPressed: (BuildContext context) {
-                  userManagerStore.logout();
+                  userManagerStore!.logout();
                 },
               ),
             ],
