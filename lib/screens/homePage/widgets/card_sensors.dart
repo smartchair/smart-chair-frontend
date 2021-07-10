@@ -8,6 +8,8 @@ import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/current_chair_data_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 
+import 'sensorSummary/sensor_summary.dart';
+
 class CardSensor extends StatefulWidget {
   @override
   _CardSensorState createState() => _CardSensorState();
@@ -34,7 +36,6 @@ class _CardSensorState extends State<CardSensor> {
 
     disposeReaction =
         reaction((_) => chairStore!.selectedChair, (dynamic newChair) {
-      print('inside reaction');
       print('value chairSelected ${chairStore!.selectedChair}');
       currentChairDataStore!.getCurrentTemp(newChair);
       currentChairDataStore!.getCurrentLum(newChair);
@@ -110,7 +111,8 @@ class _CardSensorState extends State<CardSensor> {
         ),
         Observer(builder: (_) {
           if (userManagerStore!.isLoggedIn &&
-              userManagerStore!.user!.chairs!.isNotEmpty) {
+              userManagerStore!.user!.chairs!.isNotEmpty &&
+              currentChairDataStore!.error == '') {
             return Container(
               height: 150,
               width: 500,
@@ -120,11 +122,17 @@ class _CardSensorState extends State<CardSensor> {
                 ),
                 color: Colors.grey.shade300,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SensorSummaryPage()));
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
                         width: 200,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +141,7 @@ class _CardSensorState extends State<CardSensor> {
                             Text(
                               "Temperatura:",
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                                  fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                             Observer(builder: (_) {
                               if (currentChairDataStore!.loading) {
@@ -155,14 +163,11 @@ class _CardSensorState extends State<CardSensor> {
                               } else {
                                 return Align(
                                   alignment: Alignment.center,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 43),
-                                    child: Text(
-                                      "${currentChairDataStore!.temp} °C",
-                                      style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700),
-                                    ),
+                                  child: Text(
+                                    "${currentChairDataStore!.temp} °C",
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700),
                                   ),
                                 );
                               }
@@ -170,7 +175,7 @@ class _CardSensorState extends State<CardSensor> {
                             Text(
                               "Luminosidade:",
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                                  fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                             Observer(
                               builder: (_) {
@@ -194,7 +199,7 @@ class _CardSensorState extends State<CardSensor> {
                                   return Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      "${currentChairDataStore!.lum} lumens",
+                                      "${currentChairDataStore!.lum} LM",
                                       style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.w700),
@@ -206,24 +211,36 @@ class _CardSensorState extends State<CardSensor> {
                           ],
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Tempo sentado:",
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(
-                            height: 25,
-                          ),
-                          Text(
-                            " 1 hora",
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w700),
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              "Tempo sentado:",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                            Text(
+                              " 1 hora",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w700),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Container(
+                                padding: EdgeInsets.only(right: 15),
+                                child: Text(
+                                  "VER MAIS",
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -256,7 +273,7 @@ class _CardSensorState extends State<CardSensor> {
                 child: Center(
                   child: Container(
                     child: Text(
-                      'Nenhum dispositivo encontrado',
+                      'Nenhum dado foi encontrado',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),

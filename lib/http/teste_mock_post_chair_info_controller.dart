@@ -15,9 +15,10 @@ Future<void> addMockNewChair(String? chairId) async {
   var presence = true;
 
   print('inside request');
+  print(DateTime.now());
 
   var data =
-      '{"chairId": "$chairId","temp" : "$temp", "presence" : "$presence", "noise" : "$noise", "lum" : "$lum", "hum" : "$hum", "time" : "${DateTime.now()}" }';
+      '{"chairId": "$chairId","temp" : "$temp", "presence" : "$presence", "noise" : "$noise", "lum" : "$lum", "hum" : "$hum"}';
 
   try {
     var response =
