@@ -61,3 +61,22 @@ Future<User?> login(String? email, String? password) async {
     print(e);
   }
 }
+
+Future forgotPassword(String email) async {
+  String body = '{"email" : "$email"}';
+  try {
+    var response = await http.post(
+        Uri.https("$URL_PATH_API", "/users/forgot_pass"),
+        headers: headers,
+        body: body);
+
+    var bodyResponse = jsonDecode(utf8.decoder.convert(response.bodyBytes));
+    if (response.statusCode == HttpStatus.ok) {
+      return "Email enviado com sucesso";
+    } else {
+      Future.error(bodyResponse['errors'][0]['title']);
+    }
+  } catch (e) {
+    print(e);
+  }
+}

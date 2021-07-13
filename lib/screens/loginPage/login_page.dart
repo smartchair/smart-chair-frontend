@@ -7,6 +7,7 @@ import 'package:smart_chair_frontend/bottomButtonWidget/bottom_button.dart';
 import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
 import 'package:smart_chair_frontend/errorBoxWidget/error_box.dart';
 import 'package:smart_chair_frontend/screens/createAccountPage/create_account_page.dart';
+import 'package:smart_chair_frontend/screens/forgotPassPage/forgot_pass_page.dart';
 import 'package:smart_chair_frontend/stores/login_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
@@ -80,12 +81,12 @@ class _LoginPageState extends State<LoginPage> {
               child: Container(
                 padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
                 child: GestureDetector(
-                  /*onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SplashPage()));
-                    },*/
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ForgotPassPage()));
+                  },
                   child: Text(
                     "Esqueci minha senha",
                     style: TextStyle(
@@ -101,8 +102,12 @@ class _LoginPageState extends State<LoginPage> {
               builder: (_) => Container(
                 height: 50,
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: BottomButton(loginStore.loading, primaryColor,
-                    customColor, "Entrar", loginStore.logInPressed as void Function()?),
+                child: BottomButton(
+                    loginStore.loading,
+                    primaryColor,
+                    customColor,
+                    "Entrar",
+                    loginStore.logInPressed as void Function()?),
               ),
             ),
             Container(
