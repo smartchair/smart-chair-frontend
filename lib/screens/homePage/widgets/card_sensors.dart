@@ -104,7 +104,13 @@ class _CardSensorState extends State<CardSensor> {
             Container(
               child: IconButton(
                 icon: Icon(Icons.refresh),
-                onPressed: chairStore!.getChair,
+                onPressed: () {
+                  chairStore!.getChair();
+                  currentChairDataStore!
+                      .getCurrentTemp(chairStore!.selectedChair);
+                  currentChairDataStore!
+                      .getCurrentLum(chairStore!.selectedChair);
+                },
               ),
             ),
           ],

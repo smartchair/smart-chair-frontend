@@ -94,7 +94,8 @@ class _DevicePageState extends State<DevicePage> {
               itemBuilder: (context, index) {
                 var listNameChairs =
                     userManagerStore!.user!.chairs!.values.toList();
-                var listIdsChairs = userManagerStore!.user!.chairs!.keys.toList();
+                var listIdsChairs =
+                    userManagerStore!.user!.chairs!.keys.toList();
                 return Container(
                   padding: EdgeInsets.all(8),
                   child: Dismissible(
@@ -179,7 +180,7 @@ class _DevicePageState extends State<DevicePage> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 20),
-                child: Text('Deseja editar o nome \n de seu dispositivo ?'),
+                child: Text('O que deseja fazer?'),
               ),
             ],
           ),
@@ -190,6 +191,14 @@ class _DevicePageState extends State<DevicePage> {
               Navigator.pop(context);
             },
             child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              chairStore!.setChairId(listIdsChairs);
+              chairStore!.removeChair();
+              Navigator.of(context).pop(true);
+            },
+            child: const Text('Excluir'),
           ),
           TextButton(
             onPressed: () {
@@ -206,7 +215,7 @@ class _DevicePageState extends State<DevicePage> {
                 ),
               );
             },
-            child: const Text('Sim'),
+            child: const Text('Editar'),
           ),
         ],
       ),

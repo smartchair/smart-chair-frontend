@@ -119,13 +119,13 @@ class _SensorSummaryPageState extends State<SensorSummaryPage> {
   }
 
   Widget dataSensors(double data, String unit) {
-    print("Inisde dataSensors $data");
+    print("Inisde dataSensors ${(data.toStringAsFixed(2))}");
     return Align(
       alignment: Alignment.center,
       child: Padding(
         padding: const EdgeInsets.only(right: 43),
         child: Text(
-          "${data} $unit",
+          "${data.toStringAsFixed(0)} $unit",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         ),
       ),
