@@ -2,9 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class BarGraphTemp extends StatelessWidget {
-  final double? temp;
+  double temp = 0;
 
   BarGraphTemp(this.temp);
+
+  //var diff = currentTime.difference(startTime).inHours;
 
   @override
   Widget build(BuildContext context) {
@@ -50,20 +52,22 @@ class BarGraphTemp extends StatelessWidget {
                     fontSize: 14),
                 margin: 20,
                 getTitles: (double value) {
-                  switch (value.toInt()) {
-                    case 0:
-                      return 'Mn';
+                  var currentTime = DateTime.now();
+
+                  switch (currentTime.weekday) {
                     case 1:
-                      return 'Te';
+                      return 'Mn';
                     case 2:
-                      return 'Wd';
+                      return 'Te';
                     case 3:
-                      return 'Tu';
+                      return 'Wd';
                     case 4:
-                      return 'Fr';
+                      return 'Tu';
                     case 5:
-                      return 'St';
+                      return 'Fr';
                     case 6:
+                      return 'St';
+                    case 7:
                       return 'Sn';
                     default:
                       return '';
@@ -80,7 +84,7 @@ class BarGraphTemp extends StatelessWidget {
                 x: 0,
                 barRods: [
                   BarChartRodData(
-                      y: temp!,
+                      y: temp,
                       colors: [Colors.lightBlueAccent, Colors.greenAccent])
                 ],
                 showingTooltipIndicators: [0],

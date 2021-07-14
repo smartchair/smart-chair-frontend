@@ -66,67 +66,28 @@ abstract class _CurrentChairDataStore with Store {
   }
 
   @action
-  Future<void> getAllTempCurrentChair(String? chair) async {
+  Future<void> getAllAverageDataCurrentChair(String? chair) async {
     loading = true;
     error = '';
     try {
       var listTemp = await getAllTempChair(chair);
-      print(listTemp);
+      var listLum = await getAllLumChair(chair);
+      var listHum = await getAllHumChair(chair);
+      var listNoise = await getAllNoiseChair(chair);
+
+      print("lenght temp:${listTemp.length}");
+      print("lenght lum:${listLum.length}");
+      print("length hum: ${listHum.length}");
+      print("lenght noise: ${listNoise.length}");
+
       averageTemp = listTemp.map((temp) => temp).reduce((a, b) => a + b) /
           listTemp.length;
-      print(averageTemp);
-    } catch (e) {
-      error = e.toString();
-    }
-
-    loading = false;
-  }
-
-  @action
-  Future<void> getAllLumCurrentChair(String? chair) async {
-    loading = true;
-
-    try {
-      var listLum = await getAllLumChair(chair);
-      print(listLum);
       averageLum =
           listLum.map((temp) => temp).reduce((a, b) => a + b) / listLum.length;
-      print(averageLum);
-    } catch (e) {
-      error = e.toString();
-    }
-
-    loading = false;
-  }
-
-  @action
-  Future<void> getAllHumCurrentChair(String? chair) async {
-    loading = true;
-    error = '';
-
-    try {
-      var listHum = await getAllHumChair(chair);
-      print(listHum);
       averageHum =
           listHum.map((temp) => temp).reduce((a, b) => a + b) / listHum.length;
-      print(averageHum);
-    } catch (e) {
-      error = e.toString();
-    }
-
-    loading = false;
-  }
-
-  @action
-  Future<void> getAllNoiseCurrentChair(String? chair) async {
-    loading = true;
-    error = '';
-    try {
-      var listNoise = await getAllNoiseChair(chair);
-      print(listNoise);
       averageNoise = listNoise.map((temp) => temp).reduce((a, b) => a + b) /
           listNoise.length;
-      print(averageNoise);
     } catch (e) {
       error = e.toString();
     }

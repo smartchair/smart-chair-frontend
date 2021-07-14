@@ -11,14 +11,14 @@ class BarChartTemp extends StatefulWidget {
 }
 
 class BarChartTempState extends State<BarChartTemp> {
-  final GraphStore? graphStore = GetIt.I<GraphStore>();
+  final GraphStore graphStore = GetIt.I<GraphStore>();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    final dispose = autorun((_) => graphStore!.getCurrentTemp());
+    final dispose = autorun((_) => graphStore.getCurrentTemp());
 
     dispose();
   }
@@ -27,7 +27,7 @@ class BarChartTempState extends State<BarChartTemp> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Observer(builder: (_) => BarGraphTemp(graphStore!.temp)),
+        Observer(builder: (_) => BarGraphTemp(graphStore.temp)),
       ],
     );
   }

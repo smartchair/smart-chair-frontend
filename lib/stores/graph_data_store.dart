@@ -15,7 +15,7 @@ abstract class _GraphStore with Store {
   bool loading = false;
 
   @observable
-  double? temp;
+  double temp = 0;
 
   @observable
   String? error;
@@ -28,7 +28,7 @@ abstract class _GraphStore with Store {
       final chairs = GetIt.I<UserManagerStore>().user!.chairs;
       print(chairs);
 
-      temp = await (getCurrentTempChair('chair92'));
+      temp = await (getCurrentTempChair('ESP-07'));
       print('graph store temp $temp');
     } catch (e) {
       print(e);

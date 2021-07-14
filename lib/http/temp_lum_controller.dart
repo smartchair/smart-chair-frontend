@@ -88,7 +88,6 @@ Future getAllTempChair(String? chairId) async {
 
     var bodyResponse = jsonDecode(response.body);
     if (response.statusCode == HttpStatus.ok) {
-      print(bodyResponse['data'][0]['Temps']);
       return bodyResponse['data'][0]['Temps']; //chair.chairIds;
     } else {
       return Future.error(
@@ -117,7 +116,6 @@ Future getAllLumChair(String? chairId) async {
 
     var bodyResponse = jsonDecode(response.body);
     if (response.statusCode == HttpStatus.ok) {
-      print(bodyResponse['data'][0]['Lums']);
       return bodyResponse['data'][0]['Lums']; //chair.chairIds;
     } else {
       return Future.error(
@@ -146,7 +144,6 @@ Future getAllHumChair(String? chairId) async {
 
     var bodyResponse = jsonDecode(response.body);
     if (response.statusCode == HttpStatus.ok) {
-      print(bodyResponse['data'][0]['Hums']);
       return bodyResponse['data'][0]['Hums']; //chair.chairIds;
     } else {
       return Future.error(
@@ -175,8 +172,7 @@ Future getAllNoiseChair(String? chairId) async {
 
     var bodyResponse = jsonDecode(response.body);
     if (response.statusCode == HttpStatus.ok) {
-      print(bodyResponse['data'][0]['Noises']);
-      return bodyResponse['data'][0]['Noises']; //chair.chairIds;
+      return bodyResponse['data'][0]['Noises'];
     } else {
       return Future.error("Erro para carregar dados de ruído"); //"Bad request";
     }

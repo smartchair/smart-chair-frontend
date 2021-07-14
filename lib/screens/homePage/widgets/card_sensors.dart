@@ -4,11 +4,10 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:smart_chair_frontend/screens/sensorSummaryPage/sensor_summary_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/current_chair_data_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
-
-import 'sensorSummary/sensor_summary.dart';
 
 class CardSensor extends StatefulWidget {
   @override

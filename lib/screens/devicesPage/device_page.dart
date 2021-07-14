@@ -196,7 +196,7 @@ class _DevicePageState extends State<DevicePage> {
             onPressed: () {
               chairStore!.setChairId(listIdsChairs);
               chairStore!.removeChair();
-              Navigator.of(context).pop(true);
+              Navigator.of(context).pop();
             },
             child: const Text('Excluir'),
           ),
