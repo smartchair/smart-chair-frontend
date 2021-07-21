@@ -88,7 +88,7 @@ Future getAllTempChair(String? chairId) async {
 
     var bodyResponse = jsonDecode(response.body);
     if (response.statusCode == HttpStatus.ok) {
-      return bodyResponse['data'][0]['Temps']; //chair.chairIds;
+      return bodyResponse['data'][0]['Temps'];
     } else {
       return Future.error(
           "Erro para carregar dados da temperatura"); //"Bad request";

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
@@ -96,6 +97,32 @@ class _DevicePageState extends State<DevicePage> {
                     userManagerStore!.user!.chairs!.values.toList();
                 var listIdsChairs =
                     userManagerStore!.user!.chairs!.keys.toList();
+                // return Slidable(
+                //   child: Container(
+                //     padding: EdgeInsets.all(10),
+                //     child: ListTile(
+                //       title: Text(listNameChairs[index]),
+                //     ),
+                //   ),
+                //   actionPane: SlidableDrawerActionPane(),
+                //   actionExtentRatio: 0.25,
+                //   direction: Axis.horizontal,
+                //   secondaryActions: [
+                //     IconSlideAction(
+                //         caption: 'Deletar',
+                //         color: Colors.red,
+                //         icon: Icons.delete,
+                //         onTap: () {
+                //           chairStore!.setChairId(listIdsChairs[index]);
+                //           chairStore!.removeChair();
+                //         }),
+                //     IconSlideAction(
+                //         caption: 'Editar',
+                //         color: Colors.indigo,
+                //         icon: Icons.edit,
+                //         onTap: () => print('editar')),
+                //   ],
+                // );
                 return Container(
                   padding: EdgeInsets.all(8),
                   child: Dismissible(

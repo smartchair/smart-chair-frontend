@@ -80,14 +80,17 @@ abstract class _CurrentChairDataStore with Store {
       print("length hum: ${listHum.length}");
       print("lenght noise: ${listNoise.length}");
 
-      averageTemp = listTemp.map((temp) => temp).reduce((a, b) => a + b) /
-          listTemp.length;
-      averageLum =
-          listLum.map((temp) => temp).reduce((a, b) => a + b) / listLum.length;
-      averageHum =
-          listHum.map((temp) => temp).reduce((a, b) => a + b) / listHum.length;
-      averageNoise = listNoise.map((temp) => temp).reduce((a, b) => a + b) /
-          listNoise.length;
+      averageTemp =
+          listTemp.map((item) => item["temp"]).reduce((a, b) => a + b) /
+              listTemp.length;
+      print(averageTemp);
+      averageLum = listLum.map((item) => item["lum"]).reduce((a, b) => a + b) /
+          listLum.length;
+      averageHum = listHum.map((item) => item["hum"]).reduce((a, b) => a + b) /
+          listHum.length;
+      averageNoise =
+          listNoise.map((item) => item["noise"]).reduce((a, b) => a + b) /
+              listNoise.length;
     } catch (e) {
       error = e.toString();
     }

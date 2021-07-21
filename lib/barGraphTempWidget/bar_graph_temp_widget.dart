@@ -52,9 +52,31 @@ class BarGraphTemp extends StatelessWidget {
                     fontSize: 14),
                 margin: 20,
                 getTitles: (double value) {
+                  List<DateTime>? listDates;
                   var currentTime = DateTime.now();
+                  var lastWeek = new DateTime(
+                      currentTime.year, currentTime.month, currentTime.day - 7);
+                  listDates!.add(lastWeek);
+                  var daySix = new DateTime(
+                      currentTime.year, currentTime.month, currentTime.day - 6);
+                  listDates.add(daySix);
+                  var dayFive = new DateTime(
+                      currentTime.year, currentTime.month, currentTime.day - 5);
+                  listDates.add(dayFive);
+                  var dayFour = new DateTime(
+                      currentTime.year, currentTime.month, currentTime.day - 4);
+                  listDates.add(dayFour);
+                  var dayThree = new DateTime(
+                      currentTime.year, currentTime.month, currentTime.day - 3);
+                  listDates.add(dayThree);
+                  var dayTow = new DateTime(
+                      currentTime.year, currentTime.month, currentTime.day - 2);
+                  listDates.add(dayTow);
+                  var dayOne = new DateTime(
+                      currentTime.year, currentTime.month, currentTime.day - 1);
+                  listDates.add(dayOne);
 
-                  switch (currentTime.weekday) {
+                  switch (listDates[1].weekday) {
                     case 1:
                       return 'Mn';
                     case 2:

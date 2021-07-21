@@ -45,7 +45,6 @@ class CreateAccountPageState extends State<CreateAccountPage>
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          //BackgroundWidget(),
           Align(
             alignment: Alignment.center,
             child: Container(
@@ -116,7 +115,8 @@ class CreateAccountPageState extends State<CreateAccountPage>
                             primaryColor,
                             customColor,
                             "Criar Conta",
-                            _createAccountStore.createAccountPressed as void Function()?),
+                            _createAccountStore.createAccountPressed as void
+                                Function()?),
                       ),
                       Container(
                         child: GestureDetector(
