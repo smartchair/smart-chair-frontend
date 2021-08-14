@@ -1,6 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'dart:async';
-
+import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:smart_chair_frontend/http/temp_lum_controller.dart';
 
 part 'current_chair_data_store.g.dart';
@@ -17,6 +18,12 @@ abstract class _CurrentChairDataStore with Store {
 
   @observable
   double? lum;
+
+  @observable
+  int hours = 0;
+
+  @observable
+  int minutes = 0;
 
   @observable
   String error = '';
@@ -37,15 +44,11 @@ abstract class _CurrentChairDataStore with Store {
   Future<void> getCurrentTemp(String? chair) async {
     loading = true;
     error = '';
-    print('inside store value $chair');
-    print('inside store value error $error');
     try {
       temp = await getCurrentTempChair(chair);
-      print('graph store temp $temp');
     } catch (e) {
       error = e.toString();
     }
-    print('inside store value error $error');
 
     loading = false;
   }
@@ -57,7 +60,46 @@ abstract class _CurrentChairDataStore with Store {
 
     try {
       lum = await getCurrentLumChair(chair);
-      print('graph store lum $lum');
+    } catch (e) {
+      error = e.toString();
+    }
+
+    loading = false;
+  }
+
+  @action
+  Future<void> getPresence(String? chair) async {
+    loading = true;
+    error = '';
+
+    try {
+      var list = await getAllPresence(chair);
+
+      var lastNoPresenceElement =
+          list.where((x) => x['presence'] == false).toList().last;
+      print(' presence false $lastNoPresenceElement');
+      var lastPresenceElement =
+          list.where((x) => x['presence'] == true).toList().last;
+      print(' presence true $lastPresenceElement');
+
+      DateFormat format = DateFormat("dd-MM-yy HH:mm:ss");
+      var lastPresenceDate = format.parse(lastPresenceElement['dateTime']);
+      var lastNoPresenceDate = format.parse(lastNoPresenceElement['dateTime']);
+
+      print('dates formatted $lastPresenceDate $lastNoPresenceDate');
+
+      print(lastNoPresenceDate.difference(lastPresenceDate));
+      if (!lastNoPresenceDate.difference(lastPresenceDate).isNegative) {
+        hours = 0;
+        minutes = 0;
+      } else {
+        print('date time now ${DateTime.now()}');
+        print(DateTime.now().difference(lastPresenceDate));
+        hours = DateTime.now().difference(lastNoPresenceDate).inHours;
+        minutes = DateTime.now().difference(lastNoPresenceDate).inMinutes;
+        print('Hours: $hours');
+        print('minutes: $minutes');
+      }
     } catch (e) {
       error = e.toString();
     }
@@ -74,11 +116,9 @@ abstract class _CurrentChairDataStore with Store {
       var listLum = await getAllLumChair(chair);
       var listHum = await getAllHumChair(chair);
       var listNoise = await getAllNoiseChair(chair);
+      var listPresence = await getAllPresence(chair);
 
-      print("lenght temp:${listTemp.length}");
-      print("lenght lum:${listLum.length}");
-      print("length hum: ${listHum.length}");
-      print("lenght noise: ${listNoise.length}");
+      print(listPresence);
 
       averageTemp =
           listTemp.map((item) => item["temp"]).reduce((a, b) => a + b) /

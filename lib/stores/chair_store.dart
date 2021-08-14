@@ -80,8 +80,6 @@ abstract class _ChairStore with Store {
       GetIt.I<UserManagerStore>().user!.chairs =
           await getChairs(GetIt.I<UserManagerStore>().user!.email);
 
-      print('user manager chair ${userManagerStore!.user!.chairs}');
-
       if (GetIt.I<UserManagerStore>().user!.chairs!.isNotEmpty) {
         selectedChair = GetIt.I<UserManagerStore>().user!.chairs!.keys.first;
       } else {

@@ -38,6 +38,7 @@ class _CardSensorState extends State<CardSensor> {
       print('value chairSelected ${chairStore!.selectedChair}');
       currentChairDataStore!.getCurrentTemp(newChair);
       currentChairDataStore!.getCurrentLum(newChair);
+      currentChairDataStore!.getPresence(newChair);
     });
   }
 
@@ -109,6 +110,7 @@ class _CardSensorState extends State<CardSensor> {
                       .getCurrentTemp(chairStore!.selectedChair);
                   currentChairDataStore!
                       .getCurrentLum(chairStore!.selectedChair);
+                  currentChairDataStore!.getPresence(chairStore!.selectedChair);
                 },
               ),
             ),
@@ -226,10 +228,43 @@ class _CardSensorState extends State<CardSensor> {
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500),
                             ),
-                            Text(
-                              " 1 hora",
-                              style: TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.w700),
+                            Observer(
+                              builder: (_) {
+                                if (currentChairDataStore!.loading) {
+                                  return Align(
+                                    alignment: Alignment.center,
+                                    child: SizedBox(
+                                      height: 30,
+                                      width: 130,
+                                      child: Shimmer.fromColors(
+                                        baseColor: Colors.grey[200]!,
+                                        highlightColor: Colors.white70,
+                                        enabled: true,
+                                        child: Container(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Align(
+                                    alignment: Alignment.center,
+                                    child: currentChairDataStore!.hours == 0
+                                        ? Text(
+                                            "${currentChairDataStore!.minutes} minuto(s)",
+                                            style: TextStyle(
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.w700),
+                                          )
+                                        : Text(
+                                            " ${currentChairDataStore!.hours}:0${currentChairDataStore!.minutes} hora(s)",
+                                            style: TextStyle(
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                  );
+                                }
+                              },
                             ),
                             Align(
                               alignment: Alignment.bottomRight,

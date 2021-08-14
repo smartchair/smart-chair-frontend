@@ -51,7 +51,7 @@ Future<User?> login(String? email, String? password) async {
       print('response login true ${response.headers}');
       updateCookie(response, prefs);
 
-      user.token = response.headers['set-cookie'];
+      //user.token = response.headers['set-cookie'];
 
       return user; //bodyResponse['data'][0]['status'].toString();
     } else {

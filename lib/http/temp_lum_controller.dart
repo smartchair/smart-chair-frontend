@@ -180,3 +180,30 @@ Future getAllNoiseChair(String? chairId) async {
     return e;
   }
 }
+
+Future getAllPresence(String? chairId) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  headers['cookie'] = prefs.getString("cookie")!;
+
+  if (chairId == "" || chairId == null) {
+    return Future.error('Sem dispositivos');
+  }
+
+  try {
+    var response = await http.get(
+        Uri.https(
+          URL_PATH_API,
+          "/chair/all/presence/$chairId",
+        ),
+        headers: headers);
+
+    var bodyResponse = jsonDecode(response.body);
+    if (response.statusCode == HttpStatus.ok) {
+      return bodyResponse['data'][0]['Presences'];
+    } else {
+      return Future.error("Erro para carregar dados de ruído"); //"Bad request";
+    }
+  } catch (e) {
+    return e;
+  }
+}
