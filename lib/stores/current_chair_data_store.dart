@@ -1,7 +1,6 @@
 import 'package:mobx/mobx.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:smart_chair_frontend/http/temp_lum_controller.dart';
 
 part 'current_chair_data_store.g.dart';
@@ -14,10 +13,10 @@ abstract class _CurrentChairDataStore with Store {
   bool loading = false;
 
   @observable
-  double? temp;
+  double temp = 0.0;
 
   @observable
-  double? lum;
+  double lum = 0.0;
 
   @observable
   int hours = 0;
@@ -139,7 +138,7 @@ abstract class _CurrentChairDataStore with Store {
   }
 
   @action
-  void resetChairData(double? value) {
+  void resetChairData(double value) {
     temp = value;
     lum = value;
   }

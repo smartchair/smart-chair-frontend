@@ -206,7 +206,7 @@ class _CardSensorState extends State<CardSensor> {
                                   return Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      "${currentChairDataStore!.lum!.toStringAsFixed(0)} LM",
+                                      "${currentChairDataStore!.lum.toStringAsFixed(0)} LM",
                                       style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.w700),

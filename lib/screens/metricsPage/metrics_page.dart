@@ -18,7 +18,7 @@ class BarChartTempState extends State<BarChartTemp> {
     // TODO: implement initState
     super.initState();
 
-    final dispose = autorun((_) => graphStore.getCurrentTemp());
+    final dispose = autorun((_) => graphStore.getAverageSensors());
 
     dispose();
   }
@@ -27,7 +27,7 @@ class BarChartTempState extends State<BarChartTemp> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Observer(builder: (_) => BarGraphTemp(graphStore.temp)),
+        Observer(builder: (_) => BarGraphTemp(graphStore.listAverage)),
       ],
     );
   }

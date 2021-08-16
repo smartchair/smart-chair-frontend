@@ -25,6 +25,6 @@ abstract class _UserManagerStore with Store {
   Future<void> logout() async {
     setUser(null);
     GetIt.I<ChairStore>().resetChair(null);
-    GetIt.I<CurrentChairDataStore>().resetChairData(null);
+    GetIt.I<CurrentChairDataStore>().resetChairData(0);
   }
 }
