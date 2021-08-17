@@ -42,7 +42,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   flutter_slidable: ^0.6.0
   intl: ^0.17.0
-  jiffy: ^4.1.0
+  flutter_launcher_icons: ^0.9.1
 
 
 
@@ -59,6 +59,11 @@ flutter_native_splash:
   image: assets/logo_tcc.png
   android: true
   ios: true
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon_launcher_2.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -79,6 +84,7 @@ flutter:
     - assets/sad.png
     - assets/logo_tcc.png
     - assets/icon.png
+    - assets/icon_launcher_2.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

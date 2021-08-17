@@ -13,11 +13,8 @@ Map<String, String> headers = {};
 final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
 
 Future<Map<String, dynamic>?> getChairs(String? email) async {
-  print('before request');
   SharedPreferences prefs = await SharedPreferences.getInstance();
   headers['cookie'] = prefs.getString("cookie") ?? '';
-
-  print('before request');
 
   try {
     var response = await http.get(
