@@ -76,7 +76,7 @@ class _SensorSummaryPageState extends State<SensorSummaryPage> {
                           return shimmerWidget();
                         } else {
                           return dataSensors(
-                              currentChairDataStore.averageLum, "LM");
+                              currentChairDataStore.averageLum, "Lux");
                         }
                       }),
                     ],

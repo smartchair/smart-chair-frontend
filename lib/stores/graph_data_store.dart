@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'dart:async';
@@ -18,28 +19,10 @@ abstract class _GraphStore with Store {
   @observable
   double temp = 0;
 
-  @observable
-  List? listAverage;
+  ObservableList listAverage = ObservableList();
 
   @observable
   String? error;
-
-  @action
-  Future<void> getCurrentTemp() async {
-    loading = true;
-
-    try {
-      final chairs = GetIt.I<UserManagerStore>().user!.chairs;
-      print(chairs);
-
-      temp = await (getCurrentTempChair('ESP-07'));
-      print('graph store temp $temp');
-    } catch (e) {
-      print(e);
-    }
-
-    loading = false;
-  }
 
   @action
   Future<void> getAverageSensors() async {
@@ -49,7 +32,9 @@ abstract class _GraphStore with Store {
       final chairId = GetIt.I<ChairStore>().selectedChair;
       print(chairId);
 
-      listAverage = await (getAverageSensor(chairId!, DateTime.now()));
+      var listAverageAux = await (getAverageSensor(chairId!, DateTime.now()));
+      listAverage.addAll(listAverageAux);
+      print('inside sptr $listAverage');
     } catch (e) {
       print(e);
     }

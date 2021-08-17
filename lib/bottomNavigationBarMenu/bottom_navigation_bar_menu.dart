@@ -24,8 +24,7 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    Container(height: 300, width: 300, child: BarChartTemp()),
-    //MetricsPage(_createSampleData()),
+    BarChartTemp(),
     SettingPage()
   ];
 
@@ -73,9 +72,7 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
           )
         ],
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[

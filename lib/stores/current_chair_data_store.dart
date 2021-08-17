@@ -1,6 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:smart_chair_frontend/http/graphs_controller.dart';
 import 'package:smart_chair_frontend/http/temp_lum_controller.dart';
 
 part 'current_chair_data_store.g.dart';
@@ -111,6 +112,7 @@ abstract class _CurrentChairDataStore with Store {
     loading = true;
     error = '';
     try {
+      //var list = await getAverageSensor(chair!, DateTime.now());
       var listTemp = await getAllTempChair(chair);
       var listLum = await getAllLumChair(chair);
       var listHum = await getAllHumChair(chair);
