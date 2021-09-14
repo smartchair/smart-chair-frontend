@@ -1,16 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
-import 'dart:async';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/screens/chairNamePage/chair_name_page.dart';
 import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
-import 'package:smart_chair_frontend/utils/const.dart';
 
 class DevicePage extends StatefulWidget {
   @override
@@ -36,9 +35,11 @@ class _DevicePageState extends State<DevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meus dispositivos'),
+        title: Text(
+          'Meus dispositivos',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
-        backgroundColor: customColor,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pushReplacement(context,
@@ -178,11 +179,50 @@ class _DevicePageState extends State<DevicePage> {
                     },
                     child: ListTile(
                       title: Text(listNameChairs[index]),
-                      trailing: IconButton(
+                      trailing: PopupMenuButton(
                         icon: Icon(Icons.edit),
-                        onPressed: () => _showConfirmDialog(context,
-                            listNameChairs[index], listIdsChairs[index]),
+                        elevation: 20,
+                        shape: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey.shade800),
+                            borderRadius: BorderRadius.circular(10)),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            child: Text('Editar'),
+                            value: 'Editar',
+                          ),
+                          PopupMenuItem(
+                            child: Text('Excluir'),
+                            value: 'Excluir',
+                          )
+                        ],
+                        onSelected: (option) {
+                          switch (option) {
+                            case 'Editar':
+                              Chair chair = Chair();
+                              chair.chairId = listNameChairs[index];
+                              chair.chairNickname = listIdsChairs[index];
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ChairNamePage(
+                                    chair: chair,
+                                  ),
+                                ),
+                              );
+                              break;
+                            case 'Excluir':
+                              chairStore!.setChairId(listIdsChairs[index]);
+                              chairStore!.removeChair();
+                              break;
+                          }
+                        },
                       ),
+                      // child: ListTile(
+                      //   title: Text(listNameChairs[index]),
+                      //   trailing: IconButton(
+                      //     icon: Icon(Icons.edit),
+                      //     onPressed: () => _showConfirmDialog(context,
+                      //         listNameChairs[index], listIdsChairs[index]),
                     ),
                   ),
                 );

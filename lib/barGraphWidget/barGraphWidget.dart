@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:flutter/gestures.dart';
+
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
-import 'package:mobx/mobx.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smart_chair_frontend/stores/graph_data_store.dart';
 
@@ -39,76 +39,7 @@ class BarGraphState extends State<BarGraph> {
 
   @override
   Widget build(BuildContext context) {
-    return Observer(
-      builder: (_) => widget.graphStore.listAverage.isEmpty ||
-              widget.graphStore.loading
-          ? AspectRatio(
-              aspectRatio: 1.5,
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey[350]!,
-                highlightColor: Colors.white10,
-                enabled: true,
-                child: Container(
-                  color: Colors.white,
-                ),
-              ),
-            )
-          : AspectRatio(
-              aspectRatio: 1.5,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18)),
-                color: const Color(0xff81e5cd),
-                child: Stack(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Text(
-                            widget.title,
-                            style: TextStyle(
-                                color: const Color(0xff0f4a3c),
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Text(
-                            '',
-                            style: TextStyle(
-                                color: const Color(0xff379982),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            height: 17,
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: BarChart(
-                                mainBarData(),
-                                swapAnimationDuration: animDuration,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-    );
+    return Observer(builder: (_) => _buildGraph());
   }
 
   BarChartGroupData makeGroupData(
@@ -117,7 +48,7 @@ class BarGraphState extends State<BarGraph> {
     bool isTouched = false,
     Color barColor = Colors.white,
     double width = 15,
-    List<int> showTooltips = const [],
+    List<int> showTooltips = const [0],
   }) {
     return BarChartGroupData(
       x: x,
@@ -142,7 +73,8 @@ class BarGraphState extends State<BarGraph> {
           case 0:
             return makeGroupData(
                 0,
-                double.parse(widget.graphStore.listAverage[0][widget.sensor]
+                double.parse(widget.graphStore.listAverage.reversed
+                    .toList()[0][widget.sensor]
                     .toStringAsFixed(2)),
                 isTouched: i == touchedIndex);
           case 1:
@@ -178,6 +110,7 @@ class BarGraphState extends State<BarGraph> {
   BarChartData mainBarData() {
     return BarChartData(
       barTouchData: BarTouchData(
+        enabled: true,
         touchTooltipData: BarTouchTooltipData(
             tooltipBgColor: Colors.blueGrey,
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
@@ -246,7 +179,7 @@ class BarGraphState extends State<BarGraph> {
         show: true,
         bottomTitles: SideTitles(
           showTitles: true,
-          getTextStyles: (value) => const TextStyle(
+          getTextStyles: (value, context) => const TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           margin: 16,
           getTitles: (double value) {
@@ -293,6 +226,94 @@ class BarGraphState extends State<BarGraph> {
         animDuration + const Duration(milliseconds: 50));
     if (isPlaying) {
       await refreshState();
+    }
+  }
+
+  Widget _buildGraph() {
+    if (widget.graphStore.loading) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: AspectRatio(
+          aspectRatio: 1.5,
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey.withOpacity(0.4),
+            highlightColor: Colors.grey.shade400,
+            enabled: true,
+            child: Container(
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+    } else if (widget.graphStore.listAverage.isNotEmpty) {
+      return AspectRatio(
+        aspectRatio: 1.5,
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          color: const Color(0xff81e5cd),
+          child: Stack(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Text(
+                      widget.title,
+                      style: TextStyle(
+                          color: const Color(0xff0f4a3c),
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      '',
+                      style: TextStyle(
+                          color: const Color(0xff379982),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 17,
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: BarChart(
+                          mainBarData(),
+                          swapAnimationDuration: animDuration,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Icon(
+                    Icons.error,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        child: Text('Não há dados'),
+      );
     }
   }
 }

@@ -3,7 +3,6 @@ class User {
   String? email;
   String? password;
   Map<String, dynamic>? chairs = Map<String, dynamic>();
-  String? token;
 
   User();
 

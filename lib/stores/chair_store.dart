@@ -1,10 +1,10 @@
+import 'dart:async';
+
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/chair_controller.dart';
 import 'package:smart_chair_frontend/http/teste_mock_post_chair_info_controller.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
-import 'dart:async';
-
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 
 part 'chair_store.g.dart';
@@ -22,6 +22,9 @@ abstract class _ChairStore with Store {
   }
 
   Chair? chair;
+
+  @observable
+  DateTime? lastRefresh;
 
   @observable
   String? result;
@@ -70,18 +73,28 @@ abstract class _ChairStore with Store {
   void setChangedChair(String? value) => selectedChair = value;
 
   @action
-  Future<void> getChair() async {
+  void setLastRefreshChairs(DateTime? value) => lastRefresh = value;
+
+  @action
+  Future<void> getChair([chair]) async {
     loading = true;
     error = null;
 
+    if (chair == null) {
+      chair = '';
+    }
     try {
       print(
           'inside chair store email ${GetIt.I<UserManagerStore>().user!.email} ');
       GetIt.I<UserManagerStore>().user!.chairs =
           await getChairs(GetIt.I<UserManagerStore>().user!.email);
 
-      if (GetIt.I<UserManagerStore>().user!.chairs!.isNotEmpty) {
+      if (GetIt.I<UserManagerStore>().user!.chairs!.isNotEmpty &&
+          chair.isEmpty) {
         selectedChair = GetIt.I<UserManagerStore>().user!.chairs!.keys.first;
+      } else if (GetIt.I<UserManagerStore>().user!.chairs!.isNotEmpty &&
+          chair.isNotEmpty) {
+        selectedChair = chair;
       } else {
         selectedChair = '';
       }
@@ -135,5 +148,6 @@ abstract class _ChairStore with Store {
     setChairNickname(value);
     setError(value);
     setChangedChair(value);
+    setLastRefreshChairs(null);
   }
 }

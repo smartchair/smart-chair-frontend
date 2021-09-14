@@ -1,8 +1,12 @@
-import 'package:mobx/mobx.dart';
 import 'dart:async';
+
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import 'package:smart_chair_frontend/http/graphs_controller.dart';
+import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/temp_lum_controller.dart';
+import 'package:smart_chair_frontend/utils/notification_service.dart';
+
+import 'chair_store.dart';
 
 part 'current_chair_data_store.g.dart';
 
@@ -20,7 +24,7 @@ abstract class _CurrentChairDataStore with Store {
   double lum = 0.0;
 
   @observable
-  int hours = 0;
+  String hours = '0';
 
   @observable
   int minutes = 0;
@@ -44,6 +48,7 @@ abstract class _CurrentChairDataStore with Store {
   Future<void> getCurrentTemp(String? chair) async {
     loading = true;
     error = '';
+    GetIt.I<ChairStore>().lastRefresh = DateTime.now();
     try {
       temp = await getCurrentTempChair(chair);
     } catch (e) {
@@ -88,18 +93,43 @@ abstract class _CurrentChairDataStore with Store {
 
       print('dates formatted $lastPresenceDate $lastNoPresenceDate');
 
-      print(lastNoPresenceDate.difference(lastPresenceDate));
+      print(
+          ' difference dates ${lastNoPresenceDate.difference(lastPresenceDate)}');
+
+      // NotificationService().showNotification('Vamos dar uma volta ?!');
+
       if (!lastNoPresenceDate.difference(lastPresenceDate).isNegative) {
-        hours = 0;
+        hours = '0';
         minutes = 0;
       } else {
-        print('date time now ${DateTime.now()}');
         print(DateTime.now().difference(lastPresenceDate));
-        hours = DateTime.now().difference(lastNoPresenceDate).inHours;
+        // hours = DateTime.now().difference(lastNoPresenceDate).inHours;
         minutes = DateTime.now().difference(lastNoPresenceDate).inMinutes;
-        print('Hours: $hours');
-        print('minutes: $minutes');
+        print('minutes $minutes');
+        // if (minutes > 20) {
+        var d = Duration(minutes: minutes);
+        List<String> parts = d.toString().split(':');
+        hours = "${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}";
+
+        // print(
+        //     'hours duration ${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}');
+
+        var onlyHours = parts[0].padLeft(2, '0');
+        var onlyMinutes = parts[1].padLeft(2, '0');
+
+        // print('only hours only minutes $onlyHours $onlyMinutes ');
+        // print(int.parse(onlyMinutes));
+
+        if (int.parse(onlyHours) > 0) {
+          NotificationService().showNotification(
+              '$onlyHours hora(s) sentado. Vamos dar uma volta ?!');
+        } else {
+          NotificationService().showNotification(
+              '$onlyMinutes minuto(s) sentado. Vamos dar uma volta ?!');
+        }
+        //}
       }
+      print('date time now ${DateTime.now()}');
     } catch (e) {
       error = e.toString();
     }

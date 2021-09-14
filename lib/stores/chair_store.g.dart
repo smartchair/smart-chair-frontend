@@ -23,6 +23,21 @@ mixin _$ChairStore on _ChairStore, Store {
               name: '_ChairStore.deviceNamePressed'))
       .value;
 
+  final _$lastRefreshAtom = Atom(name: '_ChairStore.lastRefresh');
+
+  @override
+  DateTime? get lastRefresh {
+    _$lastRefreshAtom.reportRead();
+    return super.lastRefresh;
+  }
+
+  @override
+  set lastRefresh(DateTime? value) {
+    _$lastRefreshAtom.reportWrite(value, super.lastRefresh, () {
+      super.lastRefresh = value;
+    });
+  }
+
   final _$resultAtom = Atom(name: '_ChairStore.result');
 
   @override
@@ -131,8 +146,8 @@ mixin _$ChairStore on _ChairStore, Store {
   final _$getChairAsyncAction = AsyncAction('_ChairStore.getChair');
 
   @override
-  Future<void> getChair() {
-    return _$getChairAsyncAction.run(() => super.getChair());
+  Future<void> getChair([dynamic chair]) {
+    return _$getChairAsyncAction.run(() => super.getChair(chair));
   }
 
   final _$addChairAsyncAction = AsyncAction('_ChairStore.addChair');
@@ -196,6 +211,17 @@ mixin _$ChairStore on _ChairStore, Store {
   }
 
   @override
+  void setLastRefreshChairs(DateTime? value) {
+    final _$actionInfo = _$_ChairStoreActionController.startAction(
+        name: '_ChairStore.setLastRefreshChairs');
+    try {
+      return super.setLastRefreshChairs(value);
+    } finally {
+      _$_ChairStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void resetChair(String? value) {
     final _$actionInfo = _$_ChairStoreActionController.startAction(
         name: '_ChairStore.resetChair');
@@ -209,6 +235,7 @@ mixin _$ChairStore on _ChairStore, Store {
   @override
   String toString() {
     return '''
+lastRefresh: ${lastRefresh},
 result: ${result},
 error: ${error},
 loading: ${loading},

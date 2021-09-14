@@ -25,7 +25,7 @@ class SplashPageState extends State<SplashPage> with NavigatorUtil {
         child: Container(
           width: 150,
           height: 150,
-          child: Image.asset("assets/logo_tcc.png"),
+          child: Image.asset("assets/Union.png"),
         ),
       ),
     );

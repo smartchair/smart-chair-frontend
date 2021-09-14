@@ -1,12 +1,15 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smart_chair_frontend/screens/sensorSummaryPage/sensor_summary_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/current_chair_data_store.dart';
+import 'package:smart_chair_frontend/stores/theme_test_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 
 class CardSensor extends StatefulWidget {
@@ -19,6 +22,7 @@ class _CardSensorState extends State<CardSensor> {
   final CurrentChairDataStore? currentChairDataStore =
       GetIt.I<CurrentChairDataStore>();
   final ChairStore? chairStore = GetIt.I<ChairStore>();
+  final ThemeTestStore themeTestStore = GetIt.I<ThemeTestStore>();
 
   late ReactionDisposer disposeReaction;
 
@@ -29,25 +33,17 @@ class _CardSensorState extends State<CardSensor> {
 
     when(
         (_) => (userManagerStore!.user!.chairs!.keys.isEmpty ||
-            chairStore!.selectedChair!.isEmpty), () {
-      Future.delayed(Duration(milliseconds: 100), chairStore!.getChair);
+            chairStore!.selectedChair!.isEmpty), () async {
+      await Future.delayed(Duration(milliseconds: 100), chairStore!.getChair);
     });
 
     disposeReaction =
-        reaction((_) => chairStore!.selectedChair, (dynamic newChair) {
+        reaction((_) => chairStore!.selectedChair, (dynamic newChair) async {
       print('value chairSelected ${chairStore!.selectedChair}');
-      currentChairDataStore!.getCurrentTemp(newChair);
-      currentChairDataStore!.getCurrentLum(newChair);
-      currentChairDataStore!.getPresence(newChair);
+      await currentChairDataStore!.getCurrentTemp(newChair);
+      await currentChairDataStore!.getCurrentLum(newChair);
+      await currentChairDataStore!.getPresence(newChair);
     });
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-
-    disposeReaction();
   }
 
   @override
@@ -66,12 +62,15 @@ class _CardSensorState extends State<CardSensor> {
                     return SizedBox(
                       height: 30,
                       width: 85,
-                      child: Shimmer.fromColors(
-                        baseColor: Colors.grey[350]!,
-                        highlightColor: Colors.white10,
-                        enabled: true,
-                        child: Container(
-                          color: Colors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey.withOpacity(0.4),
+                          highlightColor: Colors.grey.shade400,
+                          enabled: true,
+                          child: Container(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     );
@@ -105,7 +104,9 @@ class _CardSensorState extends State<CardSensor> {
               child: IconButton(
                 icon: Icon(Icons.refresh),
                 onPressed: () {
-                  chairStore!.getChair();
+                  chairStore!.lastRefresh = DateTime.now();
+                  print(' lastRefresh ${chairStore!.lastRefresh}');
+                  chairStore!.getChair({chairStore!.selectedChair});
                   currentChairDataStore!
                       .getCurrentTemp(chairStore!.selectedChair);
                   currentChairDataStore!
@@ -127,7 +128,9 @@ class _CardSensorState extends State<CardSensor> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                color: Colors.grey.shade300,
+                color: themeTestStore.isDark
+                    ? Colors.grey.shade800
+                    : Colors.grey.shade300,
                 child: InkWell(
                   onTap: () {
                     Navigator.push(
@@ -148,7 +151,9 @@ class _CardSensorState extends State<CardSensor> {
                             Text(
                               "Temperatura:",
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             Observer(builder: (_) {
                               if (currentChairDataStore!.loading) {
@@ -158,8 +163,8 @@ class _CardSensorState extends State<CardSensor> {
                                     height: 30,
                                     width: 130,
                                     child: Shimmer.fromColors(
-                                      baseColor: Colors.grey[200]!,
-                                      highlightColor: Colors.white70,
+                                      baseColor: Colors.grey.withOpacity(0.4),
+                                      highlightColor: Colors.grey.shade400,
                                       enabled: true,
                                       child: Container(
                                         color: Colors.white,
@@ -168,13 +173,23 @@ class _CardSensorState extends State<CardSensor> {
                                   ),
                                 );
                               } else {
+                                // return Align(
+                                //   alignment: Alignment.center,
+                                //   child: Text(
+                                //     '23 °C',
+                                //     style: TextStyle(
+                                //         fontSize: 22,
+                                //         fontWeight: FontWeight.w700),
+                                //   ),
+                                // );
                                 return Align(
                                   alignment: Alignment.center,
                                   child: Text(
                                     "${currentChairDataStore!.temp} °C",
                                     style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w700),
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
                                 );
                               }
@@ -182,7 +197,9 @@ class _CardSensorState extends State<CardSensor> {
                             Text(
                               "Luminosidade:",
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             Observer(
                               builder: (_) {
@@ -193,8 +210,8 @@ class _CardSensorState extends State<CardSensor> {
                                       height: 30,
                                       width: 130,
                                       child: Shimmer.fromColors(
-                                        baseColor: Colors.grey[200]!,
-                                        highlightColor: Colors.white70,
+                                        baseColor: Colors.grey.withOpacity(0.4),
+                                        highlightColor: Colors.grey.shade400,
                                         enabled: true,
                                         child: Container(
                                           color: Colors.white,
@@ -203,13 +220,23 @@ class _CardSensorState extends State<CardSensor> {
                                     ),
                                   );
                                 } else {
+                                  // return Align(
+                                  //   alignment: Alignment.center,
+                                  //   child: Text(
+                                  //     '50 LM',
+                                  //     style: TextStyle(
+                                  //         fontSize: 22,
+                                  //         fontWeight: FontWeight.w700),
+                                  //   ),
+                                  // );
                                   return Align(
                                     alignment: Alignment.center,
                                     child: Text(
                                       "${currentChairDataStore!.lum.toStringAsFixed(0)} LM",
                                       style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700),
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   );
                                 }
@@ -226,7 +253,9 @@ class _CardSensorState extends State<CardSensor> {
                             Text(
                               "Tempo sentado:",
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             Observer(
                               builder: (_) {
@@ -237,8 +266,8 @@ class _CardSensorState extends State<CardSensor> {
                                       height: 30,
                                       width: 130,
                                       child: Shimmer.fromColors(
-                                        baseColor: Colors.grey[200]!,
-                                        highlightColor: Colors.white70,
+                                        baseColor: Colors.grey.withOpacity(0.4),
+                                        highlightColor: Colors.grey.shade400,
                                         enabled: true,
                                         child: Container(
                                           color: Colors.white,
@@ -247,20 +276,33 @@ class _CardSensorState extends State<CardSensor> {
                                     ),
                                   );
                                 } else {
+                                  // return Align(
+                                  //   alignment: Alignment.center,
+                                  //   child: Text(
+                                  //     '2 hora(s)',
+                                  //     style: TextStyle(
+                                  //         fontSize: 22,
+                                  //         fontWeight: FontWeight.w700),
+                                  //   ),
+                                  // );
                                   return Align(
                                     alignment: Alignment.center,
-                                    child: currentChairDataStore!.hours == 0
+                                    child: currentChairDataStore!.hours ==
+                                                '0' ||
+                                            currentChairDataStore!.minutes <= 59
                                         ? Text(
                                             "${currentChairDataStore!.minutes} minuto(s)",
                                             style: TextStyle(
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.w700),
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           )
                                         : Text(
-                                            " ${currentChairDataStore!.hours}:0${currentChairDataStore!.minutes} hora(s)",
+                                            " ${currentChairDataStore!.hours} hora(s)",
                                             style: TextStyle(
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.w700),
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                   );
                                 }
@@ -292,12 +334,15 @@ class _CardSensorState extends State<CardSensor> {
               padding: EdgeInsets.all(8),
               height: 150,
               width: 500,
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey[350]!,
-                highlightColor: Colors.white10,
-                enabled: true,
-                child: Container(
-                  color: Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey.withOpacity(0.4),
+                  highlightColor: Colors.grey.shade400,
+                  enabled: true,
+                  child: Container(
+                    color: Colors.white,
+                  ),
                 ),
               ),
             );
@@ -314,8 +359,10 @@ class _CardSensorState extends State<CardSensor> {
                   child: Container(
                     child: Text(
                       'Nenhum dado foi encontrado',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
                     ),
                   ),
                 ),
@@ -323,6 +370,25 @@ class _CardSensorState extends State<CardSensor> {
             );
           }
         }),
+        Observer(
+          builder: (_) => Align(
+            alignment: Alignment.centerLeft,
+            child: chairStore!.lastRefresh == null
+                ? Container()
+                : Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    child: chairStore!.lastRefresh!.day == DateTime.now().day
+                        ? Text(
+                            'Última atualização: Hoje - ${DateFormat("k':'mm':'ss", "pt_BR").format(chairStore!.lastRefresh!)}',
+                            style: TextStyle(fontSize: 12),
+                          )
+                        : Text(
+                            'Última atualização:  ${DateFormat("dd'/'MM'/'y - k':'mm':'ss", "pt_BR").format(chairStore!.lastRefresh!)}',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                  ),
+          ),
+        )
       ],
     );
   }

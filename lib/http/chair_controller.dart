@@ -1,11 +1,12 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
-import 'dart:io';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 Map<String, String> headers = {};
@@ -24,7 +25,6 @@ Future<Map<String, dynamic>?> getChairs(String? email) async {
         ),
         headers: headers);
     var bodyResponse = jsonDecode(utf8.decoder.convert(response.bodyBytes));
-    print(response);
     print(bodyResponse);
 
     if (response.statusCode == HttpStatus.ok) {
