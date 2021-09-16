@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/http/user_controller.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
-import 'dart:async';
 
 part 'login_store.g.dart';
 
@@ -10,16 +11,16 @@ class LoginStore = _LoginStore with _$LoginStore;
 
 abstract class _LoginStore with Store {
   @observable
-  String email;
+  String? email;
 
   @observable
-  String password;
+  String? password;
 
   @observable
   bool loading = false;
 
   @observable
-  String error;
+  String? error;
 
   @action
   void setEmail(String value) => email = value.toLowerCase();
@@ -32,11 +33,11 @@ abstract class _LoginStore with Store {
       email != null &&
       email != '' &&
       RegExp(r"^[a-zA-Z0-9.?#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9]{0,253}[a-zA-Z0-9])?)*$")
-          .hasMatch(email);
-  String get emailError {
+          .hasMatch(email!);
+  String? get emailError {
     if (email == null || emailValid) {
       return null;
-    } else if (email.isEmpty) {
+    } else if (email!.isEmpty) {
       return 'E-mail obrigatório';
     } else {
       return "E-mail inválido";
@@ -45,7 +46,7 @@ abstract class _LoginStore with Store {
 
   @computed
   bool get passValid => password != null && password != '';
-  String get passError {
+  String? get passError {
     if (password == null || passValid) {
       return null;
     } else {
@@ -57,7 +58,7 @@ abstract class _LoginStore with Store {
   bool get formValid => passValid && emailValid;
 
   @computed
-  Function get logInPressed => formValid && !loading ? _logIn : null;
+  Function? get logInPressed => formValid && !loading ? _logIn : null;
 
   @action
   Future<void> _logIn() async {
@@ -68,7 +69,7 @@ abstract class _LoginStore with Store {
       final result = await login(email, password);
       GetIt.I<UserManagerStore>().setUser(result);
     } catch (e) {
-      error = e;
+      error = e as String?;
     }
     loading = false;
   }

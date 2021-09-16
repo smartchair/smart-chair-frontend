@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ErrorBox extends StatelessWidget {
-  final String message;
+  final String? message;
 
   ErrorBox({this.message});
 

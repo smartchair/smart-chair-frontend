@@ -13,10 +13,10 @@ class UserManagerStore = _UserManagerStore with _$UserManagerStore;
 
 abstract class _UserManagerStore with Store {
   @observable
-  User user;
+  User? user;
 
   @action
-  void setUser(User value) => user = value;
+  void setUser(User? value) => user = value;
 
   @computed
   bool get isLoggedIn => user != null;
@@ -25,6 +25,6 @@ abstract class _UserManagerStore with Store {
   Future<void> logout() async {
     setUser(null);
     GetIt.I<ChairStore>().resetChair(null);
-    GetIt.I<CurrentChairDataStore>().resetChairData(null);
+    GetIt.I<CurrentChairDataStore>().resetChairData(0);
   }
 }

@@ -10,16 +10,16 @@ import 'package:smart_chair_frontend/utils/const.dart';
 class ChairNamePage extends StatefulWidget {
   ChairNamePage({this.chair});
 
-  final Chair chair;
+  final Chair? chair;
 
   @override
-  _ChairNamePageState createState() => _ChairNamePageState(chair);
+  _ChairNamePageState createState() => _ChairNamePageState(chair!);
 }
 
 class _ChairNamePageState extends State<ChairNamePage> {
   _ChairNamePageState(Chair chair)
       : edit = chair.chairNickname != null,
-        chairStore = ChairStore(chair: chair ?? Chair());
+        chairStore = ChairStore(chair: chair);
 
   final ChairStore chairStore;
 
@@ -42,7 +42,14 @@ class _ChairNamePageState extends State<ChairNamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: customColor,
+        title: edit
+            ? Text(
+                'Editar dispositivo',
+                style: TextStyle(color: Colors.white),
+              )
+            : Text('Adicionar dispositivo',
+                style: TextStyle(color: Colors.white)),
+        centerTitle: true,
       ),
       body: Center(
         child: Container(
@@ -52,13 +59,13 @@ class _ChairNamePageState extends State<ChairNamePage> {
               Container(
                 child: Text(
                   edit
-                      ? 'Editar nome do seu dispositivo'
+                      ? 'Mude o nome de seu dispositivo'
                       : 'Defina um nome para seu dispositivo',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
               SizedBox(
-                height: 80,
+                height: 60,
               ),
               Observer(
                 builder: (_) => Container(
@@ -67,6 +74,14 @@ class _ChairNamePageState extends State<ChairNamePage> {
                     initialValue: edit ? chairStore.chairNickname : null,
                     onChanged: chairStore.setChairNickname,
                     decoration: InputDecoration(
+                        isDense: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: customColor),
+                        ),
                         labelText: 'Nome do dispositivo',
                         errorText: chairStore.nameError),
                   ),
@@ -78,8 +93,12 @@ class _ChairNamePageState extends State<ChairNamePage> {
               Observer(
                 builder: (_) => Container(
                   padding: EdgeInsets.symmetric(horizontal: 60),
-                  child: BottomButton(chairStore.loading, primaryColor,
-                      customColor, "Salvar", chairStore.deviceNamePressed),
+                  child: BottomButton(
+                      chairStore.loading,
+                      primaryColor,
+                      customColor,
+                      "Salvar",
+                      chairStore.deviceNamePressed as void Function()?),
                 ),
               )
             ],

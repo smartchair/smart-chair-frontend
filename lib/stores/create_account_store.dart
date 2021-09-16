@@ -9,19 +9,19 @@ class CreateAccountStore = _CreateAccountStore with _$CreateAccountStore;
 
 abstract class _CreateAccountStore with Store {
   @observable
-  String name;
+  String? name;
 
   @observable
-  String email;
+  String? email;
 
   @observable
-  String password;
+  String? password;
 
   @observable
-  String confirmPassword;
+  String? confirmPassword;
 
   @observable
-  String result;
+  String? result;
 
   @action
   void setName(String value) => name = value;
@@ -37,7 +37,7 @@ abstract class _CreateAccountStore with Store {
 
   @computed
   bool get nameValid => name != null && name != '';
-  String get nameError {
+  String? get nameError {
     if (name == null || nameValid) {
       return null;
     } else {
@@ -50,11 +50,11 @@ abstract class _CreateAccountStore with Store {
       email != null &&
       email != '' &&
       RegExp(r"^[a-zA-Z0-9.?#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9]{0,253}[a-zA-Z0-9])?)*$")
-          .hasMatch(email);
-  String get emailError {
+          .hasMatch(email!);
+  String? get emailError {
     if (email == null || emailValid) {
       return null;
-    } else if (email.isEmpty) {
+    } else if (email!.isEmpty) {
       return 'E-mail obrigatório';
     } else {
       return "E-mail inválido";
@@ -63,7 +63,7 @@ abstract class _CreateAccountStore with Store {
 
   @computed
   bool get passValid => password != null && password != '';
-  String get passError {
+  String? get passError {
     if (password == null || passValid) {
       return null;
     } else {
@@ -74,7 +74,7 @@ abstract class _CreateAccountStore with Store {
   @computed
   bool get confirmPasswordValid =>
       confirmPassword != null && password == confirmPassword;
-  String get confirmPassError {
+  String? get confirmPassError {
     if (confirmPasswordValid || confirmPassword == null) {
       return null;
     } else {
@@ -86,14 +86,14 @@ abstract class _CreateAccountStore with Store {
   bool get formValid => passValid && emailValid && confirmPasswordValid;
 
   @computed
-  Function get createAccountPressed =>
+  Function? get createAccountPressed =>
       formValid && !loading ? _createAccount : null;
 
   @observable
   bool loading = false;
 
   @observable
-  String error;
+  String? error;
 
   @action
   Future<void> _createAccount() async {
@@ -103,7 +103,7 @@ abstract class _CreateAccountStore with Store {
     try {
       result = await createUser(email, password, {});
     } catch (e) {
-      error = e;
+      error = e as String?;
     }
     loading = false;
   }

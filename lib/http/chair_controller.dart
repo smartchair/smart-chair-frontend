@@ -1,20 +1,21 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
-import 'dart:io';
 import 'package:smart_chair_frontend/utils/const.dart';
 
 Map<String, String> headers = {};
 
-final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
 
-Future<Map<String, dynamic>> getChairs(String email) async {
+Future<Map<String, dynamic>?> getChairs(String? email) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  headers['cookie'] = prefs.getString("cookie");
+  headers['cookie'] = prefs.getString("cookie") ?? '';
 
   try {
     var response = await http.get(
@@ -24,6 +25,7 @@ Future<Map<String, dynamic>> getChairs(String email) async {
         ),
         headers: headers);
     var bodyResponse = jsonDecode(utf8.decoder.convert(response.bodyBytes));
+    print(bodyResponse);
 
     if (response.statusCode == HttpStatus.ok) {
       print(bodyResponse['data'][0]['chairs']);
@@ -33,22 +35,22 @@ Future<Map<String, dynamic>> getChairs(String email) async {
           "Erro para carregar seus dispositivos"); //"Bad request";
     }
   } catch (e) {
-    return e;
+    print(e);
   }
 }
 
-Future addChairs(String chairId, String chairNickname) async {
+Future addChairs(String? chairId, String? chairNickname) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   Chair chair = Chair.toAdd(chairId: chairId, chairNickname: chairNickname);
   var data = chair.addChairToJson();
 
   try {
-    headers['cookie'] = prefs.getString("cookie");
+    headers['cookie'] = prefs.getString("cookie")!;
 
     var response = await http.post(
-        Uri.https(
-            "$URL_PATH_API", "/users/${userManagerStore.user.email}/add-chair"),
+        Uri.https("$URL_PATH_API",
+            "/users/${userManagerStore!.user!.email}/add-chair"),
         headers: headers,
         body: data);
 
@@ -67,18 +69,18 @@ Future addChairs(String chairId, String chairNickname) async {
   }
 }
 
-Future removeChairs(String chairId) async {
+Future removeChairs(String? chairId) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   Chair chair = Chair.toAdd(chairId: chairId, chairNickname: '');
   var data = chair.addChairToJson();
 
   try {
-    headers['cookie'] = prefs.getString("cookie");
+    headers['cookie'] = prefs.getString("cookie")!;
 
     var response = await http.post(
         Uri.https("$URL_PATH_API",
-            "/users/${userManagerStore.user.email}/remove-chair"),
+            "/users/${userManagerStore!.user!.email}/remove-chair"),
         headers: headers,
         body: data);
 

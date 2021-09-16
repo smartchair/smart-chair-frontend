@@ -1,11 +1,15 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:smart_chair_frontend/screens/sensorSummaryPage/sensor_summary_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/current_chair_data_store.dart';
+import 'package:smart_chair_frontend/stores/theme_test_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 
 class CardSensor extends StatefulWidget {
@@ -14,12 +18,13 @@ class CardSensor extends StatefulWidget {
 }
 
 class _CardSensorState extends State<CardSensor> {
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
-  final CurrentChairDataStore currentChairDataStore =
+  final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
+  final CurrentChairDataStore? currentChairDataStore =
       GetIt.I<CurrentChairDataStore>();
-  final ChairStore chairStore = GetIt.I<ChairStore>();
+  final ChairStore? chairStore = GetIt.I<ChairStore>();
+  final ThemeTestStore themeTestStore = GetIt.I<ThemeTestStore>();
 
-  ReactionDisposer disposeReaction;
+  late ReactionDisposer disposeReaction;
 
   @override
   void initState() {
@@ -27,31 +32,24 @@ class _CardSensorState extends State<CardSensor> {
     super.initState();
 
     when(
-        (_) => (userManagerStore.user.chairs.keys.isEmpty ||
-            chairStore.selectedChair.isEmpty), () {
-      Future.delayed(Duration(milliseconds: 100), chairStore.getChair);
+        (_) => (userManagerStore!.user!.chairs!.keys.isEmpty ||
+            chairStore!.selectedChair!.isEmpty), () async {
+      await Future.delayed(Duration(milliseconds: 100), chairStore!.getChair);
     });
 
-    disposeReaction = reaction((_) => chairStore.selectedChair, (newChair) {
-      print('inside reaction');
-      print('value chairSelected ${chairStore.selectedChair}');
-      currentChairDataStore.getCurrentTemp(newChair);
-      currentChairDataStore.getCurrentLum(newChair);
+    disposeReaction =
+        reaction((_) => chairStore!.selectedChair, (dynamic newChair) async {
+      print('value chairSelected ${chairStore!.selectedChair}');
+      await currentChairDataStore!.getCurrentTemp(newChair);
+      await currentChairDataStore!.getCurrentLum(newChair);
+      await currentChairDataStore!.getPresence(newChair);
     });
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-
-    disposeReaction();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -60,34 +58,36 @@ class _CardSensorState extends State<CardSensor> {
               padding: EdgeInsets.only(left: 20),
               child: Observer(
                 builder: (_) {
-                  if (chairStore.loading) {
+                  if (chairStore!.loading) {
                     return SizedBox(
                       height: 30,
                       width: 85,
-                      child: Shimmer.fromColors(
-                        baseColor: Colors.grey[350],
-                        highlightColor: Colors.white10,
-                        enabled: true,
-                        child: Container(
-                          color: Colors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey.withOpacity(0.4),
+                          highlightColor: Colors.grey.shade400,
+                          enabled: true,
+                          child: Container(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     );
-                  } else if (chairStore.selectedChair != null &&
-                      chairStore.selectedChair != '' &&
-                      userManagerStore.isLoggedIn) {
+                  } else if (chairStore!.selectedChair != '' &&
+                      userManagerStore!.isLoggedIn) {
                     return Container(
                       child: DropdownButton<String>(
-                        value: chairStore.selectedChair,
-                        onChanged: chairStore.setChangedChair,
-                        items: userManagerStore.user.chairs.keys
+                        value: chairStore!.selectedChair,
+                        onChanged: chairStore!.setChangedChair,
+                        items: userManagerStore!.user!.chairs!.keys
                             .map<DropdownMenuItem<String>>((String key) {
                           return DropdownMenuItem<String>(
                             value: key,
                             child: Text(
-                              userManagerStore.user.chairs.values.firstWhere(
+                              userManagerStore!.user!.chairs!.values.firstWhere(
                                   (element) =>
-                                      userManagerStore.user.chairs[key] ==
+                                      userManagerStore!.user!.chairs![key] ==
                                       element),
                             ),
                           );
@@ -103,14 +103,24 @@ class _CardSensorState extends State<CardSensor> {
             Container(
               child: IconButton(
                 icon: Icon(Icons.refresh),
-                onPressed: chairStore.getChair,
+                onPressed: () {
+                  chairStore!.lastRefresh = DateTime.now();
+                  print(' lastRefresh ${chairStore!.lastRefresh}');
+                  chairStore!.getChair({chairStore!.selectedChair});
+                  currentChairDataStore!
+                      .getCurrentTemp(chairStore!.selectedChair);
+                  currentChairDataStore!
+                      .getCurrentLum(chairStore!.selectedChair);
+                  currentChairDataStore!.getPresence(chairStore!.selectedChair);
+                },
               ),
             ),
           ],
         ),
         Observer(builder: (_) {
-          if (userManagerStore.isLoggedIn &&
-              userManagerStore.user.chairs.isNotEmpty) {
+          if (userManagerStore!.isLoggedIn &&
+              userManagerStore!.user!.chairs!.isNotEmpty &&
+              currentChairDataStore!.error == '') {
             return Container(
               height: 150,
               width: 500,
@@ -118,13 +128,21 @@ class _CardSensorState extends State<CardSensor> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                color: Colors.grey.shade300,
+                color: themeTestStore.isDark
+                    ? Colors.grey.shade800
+                    : Colors.grey.shade300,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SensorSummaryPage()));
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
                         width: 200,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,19 +151,20 @@ class _CardSensorState extends State<CardSensor> {
                             Text(
                               "Temperatura:",
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             Observer(builder: (_) {
-                              if (currentChairDataStore.temp == null ||
-                                  currentChairDataStore.loading) {
+                              if (currentChairDataStore!.loading) {
                                 return Align(
                                   alignment: Alignment.center,
                                   child: SizedBox(
                                     height: 30,
                                     width: 130,
                                     child: Shimmer.fromColors(
-                                      baseColor: Colors.grey[200],
-                                      highlightColor: Colors.white70,
+                                      baseColor: Colors.grey.withOpacity(0.4),
+                                      highlightColor: Colors.grey.shade400,
                                       enabled: true,
                                       child: Container(
                                         color: Colors.white,
@@ -154,15 +173,22 @@ class _CardSensorState extends State<CardSensor> {
                                   ),
                                 );
                               } else {
+                                // return Align(
+                                //   alignment: Alignment.center,
+                                //   child: Text(
+                                //     '23 °C',
+                                //     style: TextStyle(
+                                //         fontSize: 22,
+                                //         fontWeight: FontWeight.w700),
+                                //   ),
+                                // );
                                 return Align(
                                   alignment: Alignment.center,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 43),
-                                    child: Text(
-                                      "${currentChairDataStore.temp == null ? 0 : currentChairDataStore.temp} °C",
-                                      style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700),
+                                  child: Text(
+                                    "${currentChairDataStore!.temp} °C",
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 );
@@ -171,20 +197,21 @@ class _CardSensorState extends State<CardSensor> {
                             Text(
                               "Luminosidade:",
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             Observer(
                               builder: (_) {
-                                if (currentChairDataStore.lum == null ||
-                                    currentChairDataStore.loading) {
+                                if (currentChairDataStore!.loading) {
                                   return Align(
                                     alignment: Alignment.center,
                                     child: SizedBox(
                                       height: 30,
                                       width: 130,
                                       child: Shimmer.fromColors(
-                                        baseColor: Colors.grey[200],
-                                        highlightColor: Colors.white70,
+                                        baseColor: Colors.grey.withOpacity(0.4),
+                                        highlightColor: Colors.grey.shade400,
                                         enabled: true,
                                         child: Container(
                                           color: Colors.white,
@@ -193,13 +220,23 @@ class _CardSensorState extends State<CardSensor> {
                                     ),
                                   );
                                 } else {
+                                  // return Align(
+                                  //   alignment: Alignment.center,
+                                  //   child: Text(
+                                  //     '50 LM',
+                                  //     style: TextStyle(
+                                  //         fontSize: 22,
+                                  //         fontWeight: FontWeight.w700),
+                                  //   ),
+                                  // );
                                   return Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      "${currentChairDataStore.lum == null ? 0 : currentChairDataStore.lum.round()} lumens",
+                                      "${currentChairDataStore!.lum.toStringAsFixed(0)} LM",
                                       style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700),
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   );
                                 }
@@ -208,41 +245,104 @@ class _CardSensorState extends State<CardSensor> {
                           ],
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Tempo sentado:",
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(
-                            height: 25,
-                          ),
-                          Text(
-                            " 1 hora",
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w700),
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              "Tempo sentado:",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Observer(
+                              builder: (_) {
+                                if (currentChairDataStore!.loading) {
+                                  return Align(
+                                    alignment: Alignment.center,
+                                    child: SizedBox(
+                                      height: 30,
+                                      width: 130,
+                                      child: Shimmer.fromColors(
+                                        baseColor: Colors.grey.withOpacity(0.4),
+                                        highlightColor: Colors.grey.shade400,
+                                        enabled: true,
+                                        child: Container(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  // return Align(
+                                  //   alignment: Alignment.center,
+                                  //   child: Text(
+                                  //     '2 hora(s)',
+                                  //     style: TextStyle(
+                                  //         fontSize: 22,
+                                  //         fontWeight: FontWeight.w700),
+                                  //   ),
+                                  // );
+                                  return Align(
+                                    alignment: Alignment.center,
+                                    child: currentChairDataStore!.hours ==
+                                                '0' ||
+                                            currentChairDataStore!.minutes <= 59
+                                        ? Text(
+                                            "${currentChairDataStore!.minutes} minuto(s)",
+                                            style: TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          )
+                                        : Text(
+                                            " ${currentChairDataStore!.hours} hora(s)",
+                                            style: TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                  );
+                                }
+                              },
+                            ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Container(
+                                padding: EdgeInsets.only(right: 15),
+                                child: Text(
+                                  "VER MAIS",
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
             );
-          } else if (chairStore.loading) {
+          } else if (chairStore!.loading) {
             return Container(
               padding: EdgeInsets.all(8),
               height: 150,
               width: 500,
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey[350],
-                highlightColor: Colors.white10,
-                enabled: true,
-                child: Container(
-                  color: Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey.withOpacity(0.4),
+                  highlightColor: Colors.grey.shade400,
+                  enabled: true,
+                  child: Container(
+                    color: Colors.white,
+                  ),
                 ),
               ),
             );
@@ -258,9 +358,11 @@ class _CardSensorState extends State<CardSensor> {
                 child: Center(
                   child: Container(
                     child: Text(
-                      'Nenhum dispositivo encontrado',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      'Nenhum dado foi encontrado',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
                     ),
                   ),
                 ),
@@ -268,6 +370,25 @@ class _CardSensorState extends State<CardSensor> {
             );
           }
         }),
+        Observer(
+          builder: (_) => Align(
+            alignment: Alignment.centerLeft,
+            child: chairStore!.lastRefresh == null
+                ? Container()
+                : Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    child: chairStore!.lastRefresh!.day == DateTime.now().day
+                        ? Text(
+                            'Última atualização: Hoje - ${DateFormat("k':'mm':'ss", "pt_BR").format(chairStore!.lastRefresh!)}',
+                            style: TextStyle(fontSize: 12),
+                          )
+                        : Text(
+                            'Última atualização:  ${DateFormat("dd'/'MM'/'y - k':'mm':'ss", "pt_BR").format(chairStore!.lastRefresh!)}',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                  ),
+          ),
+        )
       ],
     );
   }

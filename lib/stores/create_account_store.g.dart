@@ -9,59 +9,59 @@ part of 'create_account_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$CreateAccountStore on _CreateAccountStore, Store {
-  Computed<bool> _$nameValidComputed;
+  Computed<bool>? _$nameValidComputed;
 
   @override
   bool get nameValid =>
       (_$nameValidComputed ??= Computed<bool>(() => super.nameValid,
               name: '_CreateAccountStore.nameValid'))
           .value;
-  Computed<bool> _$emailValidComputed;
+  Computed<bool>? _$emailValidComputed;
 
   @override
   bool get emailValid =>
       (_$emailValidComputed ??= Computed<bool>(() => super.emailValid,
               name: '_CreateAccountStore.emailValid'))
           .value;
-  Computed<bool> _$passValidComputed;
+  Computed<bool>? _$passValidComputed;
 
   @override
   bool get passValid =>
       (_$passValidComputed ??= Computed<bool>(() => super.passValid,
               name: '_CreateAccountStore.passValid'))
           .value;
-  Computed<bool> _$confirmPasswordValidComputed;
+  Computed<bool>? _$confirmPasswordValidComputed;
 
   @override
   bool get confirmPasswordValid => (_$confirmPasswordValidComputed ??=
           Computed<bool>(() => super.confirmPasswordValid,
               name: '_CreateAccountStore.confirmPasswordValid'))
       .value;
-  Computed<bool> _$formValidComputed;
+  Computed<bool>? _$formValidComputed;
 
   @override
   bool get formValid =>
       (_$formValidComputed ??= Computed<bool>(() => super.formValid,
               name: '_CreateAccountStore.formValid'))
           .value;
-  Computed<Function> _$createAccountPressedComputed;
+  Computed<Function?>? _$createAccountPressedComputed;
 
   @override
-  Function get createAccountPressed => (_$createAccountPressedComputed ??=
-          Computed<Function>(() => super.createAccountPressed,
+  Function? get createAccountPressed => (_$createAccountPressedComputed ??=
+          Computed<Function?>(() => super.createAccountPressed,
               name: '_CreateAccountStore.createAccountPressed'))
       .value;
 
   final _$nameAtom = Atom(name: '_CreateAccountStore.name');
 
   @override
-  String get name {
+  String? get name {
     _$nameAtom.reportRead();
     return super.name;
   }
 
   @override
-  set name(String value) {
+  set name(String? value) {
     _$nameAtom.reportWrite(value, super.name, () {
       super.name = value;
     });
@@ -70,13 +70,13 @@ mixin _$CreateAccountStore on _CreateAccountStore, Store {
   final _$emailAtom = Atom(name: '_CreateAccountStore.email');
 
   @override
-  String get email {
+  String? get email {
     _$emailAtom.reportRead();
     return super.email;
   }
 
   @override
-  set email(String value) {
+  set email(String? value) {
     _$emailAtom.reportWrite(value, super.email, () {
       super.email = value;
     });
@@ -85,13 +85,13 @@ mixin _$CreateAccountStore on _CreateAccountStore, Store {
   final _$passwordAtom = Atom(name: '_CreateAccountStore.password');
 
   @override
-  String get password {
+  String? get password {
     _$passwordAtom.reportRead();
     return super.password;
   }
 
   @override
-  set password(String value) {
+  set password(String? value) {
     _$passwordAtom.reportWrite(value, super.password, () {
       super.password = value;
     });
@@ -101,13 +101,13 @@ mixin _$CreateAccountStore on _CreateAccountStore, Store {
       Atom(name: '_CreateAccountStore.confirmPassword');
 
   @override
-  String get confirmPassword {
+  String? get confirmPassword {
     _$confirmPasswordAtom.reportRead();
     return super.confirmPassword;
   }
 
   @override
-  set confirmPassword(String value) {
+  set confirmPassword(String? value) {
     _$confirmPasswordAtom.reportWrite(value, super.confirmPassword, () {
       super.confirmPassword = value;
     });
@@ -116,13 +116,13 @@ mixin _$CreateAccountStore on _CreateAccountStore, Store {
   final _$resultAtom = Atom(name: '_CreateAccountStore.result');
 
   @override
-  String get result {
+  String? get result {
     _$resultAtom.reportRead();
     return super.result;
   }
 
   @override
-  set result(String value) {
+  set result(String? value) {
     _$resultAtom.reportWrite(value, super.result, () {
       super.result = value;
     });
@@ -146,13 +146,13 @@ mixin _$CreateAccountStore on _CreateAccountStore, Store {
   final _$errorAtom = Atom(name: '_CreateAccountStore.error');
 
   @override
-  String get error {
+  String? get error {
     _$errorAtom.reportRead();
     return super.error;
   }
 
   @override
-  set error(String value) {
+  set error(String? value) {
     _$errorAtom.reportWrite(value, super.error, () {
       super.error = value;
     });

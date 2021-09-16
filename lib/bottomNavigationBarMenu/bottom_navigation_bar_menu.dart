@@ -4,7 +4,9 @@ import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/screens/homePage/home_page.dart';
 import 'package:smart_chair_frontend/screens/loginPage/login_page.dart';
 import 'package:smart_chair_frontend/screens/metricsPage/metrics_page.dart';
+import 'package:smart_chair_frontend/screens/offlinePage/offline_page.dart';
 import 'package:smart_chair_frontend/screens/settingPage/setting_page.dart';
+import 'package:smart_chair_frontend/stores/connectivity_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
 import 'package:smart_chair_frontend/utils/const.dart';
 
@@ -17,15 +19,17 @@ class BottomNavigationBarMenu extends StatefulWidget {
 class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
   int _selectedIndex = 0;
 
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
+  final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
+  final ConnectivityStore connectivityStore = GetIt.I<ConnectivityStore>();
+
+  var disposeAutoRun;
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    Container(height: 300, width: 300, child: BarChartTemp()),
-    //MetricsPage(_createSampleData()),
+    BarChartTemp(),
     SettingPage()
   ];
 
@@ -39,10 +43,29 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    when((_) => userManagerStore.user == null, () {
+
+    when((_) => userManagerStore!.user == null, () {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginPage()));
     });
+
+    Future.delayed(Duration(seconds: 2), () {
+      disposeAutoRun = autorun((_) {
+        if (!connectivityStore.isConnected) {
+          print(connectivityStore.isConnected);
+          Future.delayed(Duration(microseconds: 50)).then((value) {
+            showDialog(context: context, builder: (_) => OfflinePage());
+          });
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    disposeAutoRun();
   }
 
   @override
@@ -54,28 +77,13 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
         leading: Padding(
           padding: EdgeInsets.all(8.0),
           child: Image.asset(
-            'assets/logo_tcc.png',
+            'assets/SmartChair.png',
           ),
         ),
         bottomOpacity: 1,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: IconButton(
-              onPressed: () {
-                _showAlertDialog(context, 'TESTE');
-              },
-              icon: Icon(
-                Icons.account_circle_rounded,
-                size: 40,
-              ),
-            ),
-          )
-        ],
+        actions: [],
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[

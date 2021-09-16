@@ -16,11 +16,20 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: 45),
-              CardGamification(),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: CardGamification(),
+              ),
               SizedBox(height: 45),
-              CardSuggestions(),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: CardSuggestions(),
+              ),
               SizedBox(height: 45),
-              CardSensor(),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: CardSensor(),
+              ),
               SizedBox(height: 45),
               Padding(
                 padding: EdgeInsets.only(bottom: 30),

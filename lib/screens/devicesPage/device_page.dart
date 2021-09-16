@@ -1,15 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:smart_chair_frontend/bottomNavigationBarMenu/bottom_navigation_bar_menu.dart';
-import 'dart:async';
 import 'package:smart_chair_frontend/models/chair.dart';
 import 'package:smart_chair_frontend/screens/chairNamePage/chair_name_page.dart';
 import 'package:smart_chair_frontend/screens/codeScanPage/code_scan_page.dart';
 import 'package:smart_chair_frontend/stores/chair_store.dart';
 import 'package:smart_chair_frontend/stores/user_manager_store.dart';
-import 'package:smart_chair_frontend/utils/const.dart';
 
 class DevicePage extends StatefulWidget {
   @override
@@ -17,8 +17,8 @@ class DevicePage extends StatefulWidget {
 }
 
 class _DevicePageState extends State<DevicePage> {
-  final UserManagerStore userManagerStore = GetIt.I<UserManagerStore>();
-  final ChairStore chairStore = GetIt.I<ChairStore>();
+  final UserManagerStore? userManagerStore = GetIt.I<UserManagerStore>();
+  final ChairStore? chairStore = GetIt.I<ChairStore>();
   // final ChairStore chairStore = ChairStore();
 
   @override
@@ -26,8 +26,8 @@ class _DevicePageState extends State<DevicePage> {
     // TODO: implement initState
     super.initState();
 
-    when((_) => userManagerStore.user.chairs.isEmpty, () {
-      Future.delayed(Duration(milliseconds: 200), chairStore.getChair);
+    when((_) => userManagerStore!.user!.chairs!.isEmpty, () {
+      Future.delayed(Duration(milliseconds: 200), chairStore!.getChair);
     });
   }
 
@@ -35,9 +35,11 @@ class _DevicePageState extends State<DevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meus dispositivos'),
+        title: Text(
+          'Meus dispositivos',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
-        backgroundColor: customColor,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pushReplacement(context,
@@ -57,13 +59,13 @@ class _DevicePageState extends State<DevicePage> {
         ],
       ),
       body: Observer(builder: (_) {
-        if (chairStore.loading) {
+        if (chairStore!.loading) {
           return Center(child: CircularProgressIndicator());
-        } else if (userManagerStore.user == null) {
+        } else if (userManagerStore!.user == null) {
           return Container();
-        } else if (!chairStore.loading &&
-            userManagerStore.user.chairs.length == 0 &&
-            userManagerStore.isLoggedIn) {
+        } else if (!chairStore!.loading &&
+            userManagerStore!.user!.chairs!.length == 0 &&
+            userManagerStore!.isLoggedIn) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -75,7 +77,7 @@ class _DevicePageState extends State<DevicePage> {
                   ),
                 ),
                 IconButton(
-                  onPressed: chairStore.getChair,
+                  onPressed: chairStore!.getChair,
                   icon: Icon(Icons.refresh),
                   iconSize: 30,
                 )
@@ -84,17 +86,44 @@ class _DevicePageState extends State<DevicePage> {
           );
         } else {
           return RefreshIndicator(
-            onRefresh: () => chairStore.getChair(),
+            onRefresh: () => chairStore!.getChair(),
             child: ListView.separated(
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(
                 thickness: 2,
               ),
-              itemCount: userManagerStore.user.chairs.length,
+              itemCount: userManagerStore!.user!.chairs!.length,
               itemBuilder: (context, index) {
                 var listNameChairs =
-                    userManagerStore.user.chairs.values.toList();
-                var listIdsChairs = userManagerStore.user.chairs.keys.toList();
+                    userManagerStore!.user!.chairs!.values.toList();
+                var listIdsChairs =
+                    userManagerStore!.user!.chairs!.keys.toList();
+                // return Slidable(
+                //   child: Container(
+                //     padding: EdgeInsets.all(10),
+                //     child: ListTile(
+                //       title: Text(listNameChairs[index]),
+                //     ),
+                //   ),
+                //   actionPane: SlidableDrawerActionPane(),
+                //   actionExtentRatio: 0.25,
+                //   direction: Axis.horizontal,
+                //   secondaryActions: [
+                //     IconSlideAction(
+                //         caption: 'Deletar',
+                //         color: Colors.red,
+                //         icon: Icons.delete,
+                //         onTap: () {
+                //           chairStore!.setChairId(listIdsChairs[index]);
+                //           chairStore!.removeChair();
+                //         }),
+                //     IconSlideAction(
+                //         caption: 'Editar',
+                //         color: Colors.indigo,
+                //         icon: Icons.edit,
+                //         onTap: () => print('editar')),
+                //   ],
+                // );
                 return Container(
                   padding: EdgeInsets.all(8),
                   child: Dismissible(
@@ -145,16 +174,55 @@ class _DevicePageState extends State<DevicePage> {
                       );
                     },
                     onDismissed: (direction) {
-                      chairStore.setChairId(listIdsChairs[index]);
-                      chairStore.removeChair();
+                      chairStore!.setChairId(listIdsChairs[index]);
+                      chairStore!.removeChair();
                     },
                     child: ListTile(
                       title: Text(listNameChairs[index]),
-                      trailing: IconButton(
+                      trailing: PopupMenuButton(
                         icon: Icon(Icons.edit),
-                        onPressed: () => _showConfirmDialog(context,
-                            listNameChairs[index], listIdsChairs[index]),
+                        elevation: 20,
+                        shape: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey.shade800),
+                            borderRadius: BorderRadius.circular(10)),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            child: Text('Editar'),
+                            value: 'Editar',
+                          ),
+                          PopupMenuItem(
+                            child: Text('Excluir'),
+                            value: 'Excluir',
+                          )
+                        ],
+                        onSelected: (option) {
+                          switch (option) {
+                            case 'Editar':
+                              Chair chair = Chair();
+                              chair.chairId = listNameChairs[index];
+                              chair.chairNickname = listIdsChairs[index];
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ChairNamePage(
+                                    chair: chair,
+                                  ),
+                                ),
+                              );
+                              break;
+                            case 'Excluir':
+                              chairStore!.setChairId(listIdsChairs[index]);
+                              chairStore!.removeChair();
+                              break;
+                          }
+                        },
                       ),
+                      // child: ListTile(
+                      //   title: Text(listNameChairs[index]),
+                      //   trailing: IconButton(
+                      //     icon: Icon(Icons.edit),
+                      //     onPressed: () => _showConfirmDialog(context,
+                      //         listNameChairs[index], listIdsChairs[index]),
                     ),
                   ),
                 );
@@ -179,7 +247,7 @@ class _DevicePageState extends State<DevicePage> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 20),
-                child: Text('Deseja editar o nome \n de seu dispositivo ?'),
+                child: Text('O que deseja fazer?'),
               ),
             ],
           ),
@@ -190,6 +258,14 @@ class _DevicePageState extends State<DevicePage> {
               Navigator.pop(context);
             },
             child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              chairStore!.setChairId(listIdsChairs);
+              chairStore!.removeChair();
+              Navigator.of(context).pop();
+            },
+            child: const Text('Excluir'),
           ),
           TextButton(
             onPressed: () {
@@ -206,7 +282,7 @@ class _DevicePageState extends State<DevicePage> {
                 ),
               );
             },
-            child: const Text('Sim'),
+            child: const Text('Editar'),
           ),
         ],
       ),

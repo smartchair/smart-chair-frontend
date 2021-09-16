@@ -5,7 +5,7 @@ class BottomButton extends StatelessWidget {
   final Color textColor;
   final Color backgroundColor;
   final String buttonText;
-  final VoidCallback callback;
+  final VoidCallback? callback;
 
   BottomButton(this.loading, this.textColor, this.backgroundColor,
       this.buttonText, this.callback);

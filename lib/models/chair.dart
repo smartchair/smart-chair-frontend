@@ -1,13 +1,13 @@
 class Chair {
-  String chairId;
-  String chairNickname;
+  String? chairId;
+  String? chairNickname;
 
-  int temp;
-  bool presence;
-  int noise;
-  int lum;
-  int hum;
-  DateTime time;
+  int? temp;
+  bool? presence;
+  int? noise;
+  int? lum;
+  int? hum;
+  DateTime? time;
 
   Chair();
 
